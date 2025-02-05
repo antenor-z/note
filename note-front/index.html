@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      background-color: #333;
+      color: #eee
+    }
+  </style>
+</head>
+
+<body>
+  <div>
+    <input id="noteTitle" type="textbox">
+    <textarea id="noteContent"></textarea>
+    <input id="noteCategories" type="textbox">
+    <button onclick="sendNote()">Add</button>
+  </div>
+  <div id="categories-container">
+  </div>
+
+  <div id="notes-container"></div>
+
+  <script src="note.js"></script>
+  </script>
+</body>
+
+</html>
