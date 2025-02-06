@@ -2,27 +2,33 @@
 <html>
 
 <head>
-  <title>Login</title>
+  <title>Note</title>
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    body {
-      background-color: #333;
-      color: #eee
-    }
-  </style>
+  <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
-  <div>
+  <!-- begin add note --> 
+  <button onclick="toggleAddNote()">Add note</button>
+  <div id="addNote" class="grid box">
+    <label for="noteTitle">Title</label>
     <input id="noteTitle" type="textbox">
+    <label for="noteContent">Content</label>
     <textarea id="noteContent"></textarea>
+    <label for="noteCategories">Categories (comma separated)</label>
     <input id="noteCategories" type="textbox">
     <button onclick="sendNote()">Add</button>
   </div>
-  <div id="categories-container">
+  <!-- end add note -->
+
+  <div id="categories-container" class="grid box">
+    Loading...
+  </div>
+  <div id="notes-container">
+    Loading...
   </div>
 
-  <div id="notes-container"></div>
 
   <script src="note.js"></script>
   </script>

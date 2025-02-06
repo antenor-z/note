@@ -1,3 +1,13 @@
+function toggleAddNote() {
+    const addNote = document.getElementById('addNote')
+    if (addNote.style.display === "none") {
+         addNote.style.display = "grid"
+    }
+    else {
+         addNote.style.display = "none"
+    }
+}
+
 function fetchCategories() {
     const container = document.getElementById('categories-container')
     const categoryMap = {}
@@ -65,22 +75,36 @@ function fetchNotes() {
             data["data"].forEach(element => {
                 const noteDiv = document.createElement('div')
                 noteDiv.classList.add('note')
+                noteDiv.classList.add('box')
 
                 const title = document.createElement('h2')
                 title.textContent = element.title
 
                 const btnEdit = document.createElement('button')
                 btnEdit.innerText = 'Edit'
-                btnEdit.addEventListener("click", () => editNote(element.id))
+                btnEdit.addEventListener("click", () => editNoteToggle(element.id))
 
-                const createdAt = document.createElement('h3')
-                createdAt.textContent = `Created At: ${element.createdAt}`
+                const categories = document.createElement('h3')
+                categories.textContent = `[ ${element.categories.map(cat => cat.name).join(', ')} ]`
 
-                const categories = document.createElement('h4')
-                categories.textContent = `Categories: ${element.categories.map(cat => cat.name).join(', ')}`
-
-                // Begin edit element
+                const createdAt = document.createElement('h4')
+		const date = element.createdAt
+		const year = date.substring(0, 4)
+		// 2025-02-04T12:00:37.753623325-03:00 
+		const month = date.substring(5, 7)
+		const day = date.substring(8, 10)
+		const time = date.substring(11, 16)
+		const dateUpdated = element.updatedAt
+		const yearU = dateUpdated.substring(0, 4)
+		// 2025-02-04T12:00:37.753623325-03:00 
+		const monthU = dateUpdated.substring(5, 7)
+		const dayU = dateUpdated.substring(8, 10)
+		const timeU = dateUpdated.substring(11, 16)
+                createdAt.textContent = `Created ${day}/${month}/${year} ${time} | Updated ${dayU}/${monthU}/${yearU} ${timeU}`
+                
+		// Begin edit element
                 const editDiv = document.createElement('div')
+		editDiv.classList.add("grid")
                 editDiv.id = "note" + element.id
                 editDiv.style.display = "none"
                 const editTitle = document.createElement('input')
@@ -94,26 +118,28 @@ function fetchNotes() {
                 editCategories.id = "editCategories" + element.id
 
                 // Begin edit.action buttons
+		const editActionContainer = document.createElement('div')
                 const btnUpdate = document.createElement('button')
                 btnUpdate.innerText = 'Update'
                 btnUpdate.addEventListener("click", () => updateNote(element.id))
                 const btnDelete = document.createElement('button')
                 btnDelete.innerText = 'Delete'
                 btnDelete.addEventListener("click", () => deleteNote(element.id))
+                editActionContainer.appendChild(btnUpdate)
+                editActionContainer.appendChild(btnDelete)
                 // End edit.action buttons
                 editDiv.appendChild(editTitle)
                 editDiv.appendChild(editContent)
                 editDiv.appendChild(editCategories)
-                editDiv.appendChild(btnUpdate)
-                editDiv.appendChild(btnDelete)
+                editDiv.appendChild(editActionContainer)
                 // End edit element
 
                 const content = document.createElement('p')
                 content.textContent = element.content;
 
                 noteDiv.appendChild(title)
-                noteDiv.appendChild(createdAt)
                 noteDiv.appendChild(categories)
+                noteDiv.appendChild(createdAt)
                 noteDiv.appendChild(content)
                 noteDiv.appendChild(editDiv)
                 noteDiv.appendChild(btnEdit)
@@ -127,8 +153,14 @@ function fetchNotes() {
 }
 fetchNotes()
 
-function editNote(noteId) {
-    document.getElementById("note" + noteId).style.display = "block"
+function editNoteToggle(noteId) {
+    const noteDiv = document.getElementById("note" + noteId)
+    if (noteDiv.style.display === "grid") {
+        noteDiv.style.display = "none"
+    }
+    else {
+        noteDiv.style.display = "grid"
+    }
 }
 
 function updateNote(noteId) {
@@ -203,3 +235,4 @@ function deleteNote(noteId) {
             console.error('Error fetching:', error)
         })
 }
+
