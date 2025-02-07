@@ -164,24 +164,22 @@ function editNoteToggle(noteId) {
 }
 
 function updateNote(noteId) {
-    const editTitle = document.getElementById("editTitle" + noteId).value
-    const editContent = document.getElementById("editContent" + noteId).value
-    const editCategories = document.getElementById("editCategories" + noteId).value.split(",")
+    const editTitle = document.getElementById("editTitle" + noteId).value;
+    const editContent = document.getElementById("editContent" + noteId).value;
+    const editCategories = document.getElementById("editCategories" + noteId).value.split(",");
 
-    console.log(editTitle)
-    console.log(editContent)
-    console.log(editCategories)
     fetch(`http://localhost:5000/note/${noteId}`, {
         method: "PUT",
         body: JSON.stringify({ title: editTitle, content: editContent, categories: editCategories }),
     })
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById("note" + noteId).style.display = "none"
-        })
-        .catch(error => {
-            console.error('Error fetching:', error)
-        })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById("note" + noteId).style.display = "none";
+        fetchNotes();
+    })
+    .catch(error => {
+        console.error('Error fetching:', error);
+    });
 }
 
 function sendNote() {

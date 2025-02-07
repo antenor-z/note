@@ -9,25 +9,27 @@
 </head>
 
 <body>
-  <!-- begin add note --> 
-  <button onclick="toggleAddNote()">Add note</button>
-  <div id="addNote" class="grid box">
-    <label for="noteTitle">Title</label>
-    <input id="noteTitle" type="textbox">
-    <label for="noteContent">Content</label>
-    <textarea id="noteContent"></textarea>
-    <label for="noteCategories">Categories (comma separated)</label>
-    <input id="noteCategories" type="textbox">
-    <button onclick="sendNote()">Add</button>
-  </div>
-  <!-- end add note -->
+  <content>
+    <!-- begin add note --> 
+    <button onclick="toggleAddNote()">Add note</button>
+    <div id="addNote" class="grid box">
+      <label for="noteTitle">Title</label>
+      <input id="noteTitle" type="textbox">
+      <label for="noteContent">Content</label>
+      <textarea id="noteContent"></textarea>
+      <label for="noteCategories">Categories (comma separated)</label>
+      <input id="noteCategories" type="textbox">
+      <button onclick="sendNote()">Add</button>
+    </div>
+    <!-- end add note -->
 
-  <div id="categories-container" class="grid box">
-    Loading...
-  </div>
-  <div id="notes-container">
-    Loading...
-  </div>
+    <div id="categories-container" class="grid box">
+      Loading...
+    </div>
+    <div id="notes-container">
+      Loading...
+    </div>
+  </content>
 
 
   <script src="note.js"></script>
