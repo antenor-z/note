@@ -4,6 +4,7 @@ import (
 	"note/auth"
 	"note/db"
 	"strconv"
+	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -15,18 +16,47 @@ func main() {
 
 	gin.SetMode(gin.DebugMode)
 	r := gin.Default()
-	r.Use(cors.Default())
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowMethods:     []string{"PUT", "POST", "GET", "DELETE"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true, 
+		MaxAge:           12 * time.Hour,
+	}))
+
 
 	r.POST("/login", login)
-	r.POST("/note", postNote)
-	r.PUT("/note/:id", putNote)
-	r.GET("/note", GetAllNotes)
-	r.GET("/category", GetAllCategories)
-	r.POST("/noteCat", GetNotesByCategory)
-	r.DELETE("/note/:id", deleteNote)
+	r.POST("/logout", logout)
+	internal := r.Group("/")
 
+	internal.Use(authMiddleware()) 
+	internal.POST("/note", postNote)
+	internal.PUT("/note/:id", putNote)
+	internal.GET("/note", GetAllNotes)
+	internal.GET("/isLogged", isLogged)
+	internal.GET("/category", GetAllCategories)
+	internal.POST("/noteCat", GetNotesByCategory)
+	internal.DELETE("/note/:id", deleteNote)
 	r.Run(":5000")
 
+}
+
+
+func authMiddleware() gin.HandlerFunc {
+     return func (c *gin.Context) {
+	    token, err := c.Cookie("auth_token")
+	    if err != nil || auth.Validate(token) == false {
+            c.JSON(401, "Unauthorized")
+	        c.Abort()
+	    }
+     }
+
+}
+
+func isLogged(c *gin.Context) {
+     c.JSON(200, gin.H{"data": "ok"})
+     return
 }
 
 func GetAllCategories(c *gin.Context) {
@@ -87,6 +117,7 @@ func putNote(c *gin.Context) {
 	}
 
 	db.UpdateNote(noteId, n.Title, n.Content, n.Categories)
+	c.JSON(200, gin.H{"data": n})
 }
 
 // curl -i -X DELETE -H "Content-Type: application/json" localhost:5000/note/:id
@@ -104,14 +135,27 @@ func login(c *gin.Context) {
 	var outside auth.Auth
 	err := c.ShouldBindJSON(&outside)
 	if err != nil {
-		panic("No auth")
+	    c.JSON(400, gin.H{"error": "Invalid request"})
+	    return
 	}
 	token, err := auth.Login(outside.Username, outside.Password)
 	if err != nil {
-		panic("No auth")
+	    c.JSON(401, gin.H{"error": "Wrong credential"})
+            return
 	}
 
-	c.String(200, token)
+	c.SetCookie("auth_token", token, 3600, "/", "localhost", false, true) 
+
+
+    c.JSON(200, gin.H{"message": "Login successful"})
+}
+func logout(c *gin.Context) {
+       token, err := c.Cookie("auth_token")
+       if err == nil {
+           auth.Logout(token)
+       }
+       c.SetCookie("auth_token", "", -1, "/", "", true, true)
+       	c.JSON(200, gin.H{"message": "Logged out ok"})
 }
 
 type Note struct {

@@ -1,13 +1,22 @@
 function toggleAddNote() {
     const addNote = document.getElementById('addNote')
     if (addNote.style.display === "none") {
-         addNote.style.display = "grid"
+        addNote.style.display = "grid"
     }
     else {
-         addNote.style.display = "none"
+        addNote.style.display = "none"
     }
 }
 
+function try_login() {
+    fetch('http://localhost:5000/isLogged', {credentials: "include" })
+        .then(response => {
+            if (response.status !== 200) {
+                window.location = "login.html"
+            }
+        })
+}
+try_login()
 function fetchCategories() {
     const container = document.getElementById('categories-container')
     const categoryMap = {}
@@ -21,7 +30,7 @@ function fetchCategories() {
         }
     }
     console.log(categoryMap)
-    fetch('http://localhost:5000/category')
+    fetch('http://localhost:5000/category', {credentials: "include"})
 
         .then(response => response.json())
         .then(data => {
@@ -47,7 +56,6 @@ function fetchCategories() {
             })
         })
 }
-fetchCategories()
 
 function fetchNotes() {
     fetchCategories()
@@ -66,6 +74,7 @@ function fetchNotes() {
         {
             method: "POST",
             body: JSON.stringify({ categories: catList }),
+            credentials: "include"
         }
     )
         .then(response => response.json())
@@ -82,29 +91,30 @@ function fetchNotes() {
 
                 const btnEdit = document.createElement('button')
                 btnEdit.innerText = 'Edit'
+                btnEdit.id = "editButtonNote" + element.id
                 btnEdit.addEventListener("click", () => editNoteToggle(element.id))
 
                 const categories = document.createElement('h3')
                 categories.textContent = `[ ${element.categories.map(cat => cat.name).join(', ')} ]`
 
                 const createdAt = document.createElement('h4')
-		const date = element.createdAt
-		const year = date.substring(0, 4)
-		// 2025-02-04T12:00:37.753623325-03:00 
-		const month = date.substring(5, 7)
-		const day = date.substring(8, 10)
-		const time = date.substring(11, 16)
-		const dateUpdated = element.updatedAt
-		const yearU = dateUpdated.substring(0, 4)
-		// 2025-02-04T12:00:37.753623325-03:00 
-		const monthU = dateUpdated.substring(5, 7)
-		const dayU = dateUpdated.substring(8, 10)
-		const timeU = dateUpdated.substring(11, 16)
+                const date = element.createdAt
+                const year = date.substring(0, 4)
+                // 2025-02-04T12:00:37.753623325-03:00 
+                const month = date.substring(5, 7)
+                const day = date.substring(8, 10)
+                const time = date.substring(11, 16)
+                const dateUpdated = element.updatedAt
+                const yearU = dateUpdated.substring(0, 4)
+                // 2025-02-04T12:00:37.753623325-03:00 
+                const monthU = dateUpdated.substring(5, 7)
+                const dayU = dateUpdated.substring(8, 10)
+                const timeU = dateUpdated.substring(11, 16)
                 createdAt.textContent = `Created ${day}/${month}/${year} ${time} | Updated ${dayU}/${monthU}/${yearU} ${timeU}`
-                
-		// Begin edit element
+
+                // Begin edit element
                 const editDiv = document.createElement('div')
-		editDiv.classList.add("grid")
+                editDiv.classList.add("grid")
                 editDiv.id = "note" + element.id
                 editDiv.style.display = "none"
                 const editTitle = document.createElement('input')
@@ -118,15 +128,19 @@ function fetchNotes() {
                 editCategories.id = "editCategories" + element.id
 
                 // Begin edit.action buttons
-		const editActionContainer = document.createElement('div')
+                const editActionContainer = document.createElement('div')
                 const btnUpdate = document.createElement('button')
                 btnUpdate.innerText = 'Update'
                 btnUpdate.addEventListener("click", () => updateNote(element.id))
+                editActionContainer.appendChild(btnUpdate)
                 const btnDelete = document.createElement('button')
                 btnDelete.innerText = 'Delete'
                 btnDelete.addEventListener("click", () => deleteNote(element.id))
-                editActionContainer.appendChild(btnUpdate)
                 editActionContainer.appendChild(btnDelete)
+                const btnClose = document.createElement('button')
+                btnClose.innerText = 'Close'
+                btnClose.addEventListener("click", () => editNoteToggle(element.id))
+                editActionContainer.appendChild(btnClose)
                 // End edit.action buttons
                 editDiv.appendChild(editTitle)
                 editDiv.appendChild(editContent)
@@ -151,15 +165,17 @@ function fetchNotes() {
             console.error('Error fetching:', error)
         })
 }
-fetchNotes()
 
 function editNoteToggle(noteId) {
     const noteDiv = document.getElementById("note" + noteId)
+    const noteButton = document.getElementById("editButtonNote" + noteId)
     if (noteDiv.style.display === "grid") {
         noteDiv.style.display = "none"
+        noteButton.style.display = "block"
     }
     else {
         noteDiv.style.display = "grid"
+        noteButton.style.display = "none"
     }
 }
 
@@ -171,15 +187,16 @@ function updateNote(noteId) {
     fetch(`http://localhost:5000/note/${noteId}`, {
         method: "PUT",
         body: JSON.stringify({ title: editTitle, content: editContent, categories: editCategories }),
+        credentials: "include"
     })
-    .then(response => response.json())
-    .then(data => {
-        document.getElementById("note" + noteId).style.display = "none";
-        fetchNotes();
-    })
-    .catch(error => {
-        console.error('Error fetching:', error);
-    });
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("note" + noteId).style.display = "none";
+            fetchNotes();
+        })
+        .catch(error => {
+            console.error('Error fetching:', error);
+        });
 }
 
 function sendNote() {
@@ -192,10 +209,10 @@ function sendNote() {
     fetch(`http://localhost:5000/note`, {
         method: "POST",
         body: JSON.stringify({ title: noteTitle, content: noteContent, categories: categories }),
+        credentials: "include"
     })
         .then(response => response.json())
         .then(data => {
-            console.log(data)
             fetchNotes()
         })
         .catch(error => {
@@ -212,10 +229,10 @@ function sendNote() {
     fetch(`http://localhost:5000/note`, {
         method: "POST",
         body: JSON.stringify({ title: noteTitle, content: noteContent, categories: categories }),
+        credentials: "include"
     })
         .then(response => response.json())
         .then(data => {
-            console.log(data)
             window.location = "index.html"
         })
         .catch(error => {
@@ -223,10 +240,13 @@ function sendNote() {
         });
 }
 function deleteNote(noteId) {
-    fetch(`http://localhost:5000/note/${noteId}`, { method: "DELETE" })
+    const person = prompt("Delete this note? Write 'delete' if you are sure.");
+    if (person !== "delete") {
+        return
+    }
+    fetch(`http://localhost:5000/note/${noteId}`, { method: "DELETE", credentials: "include" })
         .then(response => response.json())
         .then(data => {
-            console.log(data)
             fetchNotes()
         })
         .catch(error => {
