@@ -1,5 +1,5 @@
 function logout() {
-    fetch("http://localhost:5000/logout",
+    fetch(`${window.API_URL}/logout`,
         {
             method: "POST",
             credentials: 'include'

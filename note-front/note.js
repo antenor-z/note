@@ -9,7 +9,7 @@ function toggleAddNote() {
 }
 
 function try_login() {
-    fetch('http://localhost:5000/isLogged', {credentials: "include" })
+    fetch(`${window.API_URL}/isLogged`, {credentials: "include" })
         .then(response => {
             if (response.status !== 200) {
                 window.location = "login.html"
@@ -30,8 +30,7 @@ function fetchCategories() {
             categoryMap[checkBox.name] = true
         }
     }
-    console.log(categoryMap)
-    fetch('http://localhost:5000/category', {credentials: "include"})
+    fetch(`${window.API_URL}/category`, {credentials: "include"})
 
         .then(response => response.json())
         .then(data => {
@@ -71,7 +70,7 @@ function fetchNotes() {
         }
     }
 
-    fetch('http://localhost:5000/noteCat',
+    fetch(`${window.API_URL}/noteCat`,
         {
             method: "POST",
             body: JSON.stringify({ categories: catList }),
@@ -185,7 +184,7 @@ function updateNote(noteId) {
     const editContent = document.getElementById("editContent" + noteId).value;
     const editCategories = document.getElementById("editCategories" + noteId).value.split(",");
 
-    fetch(`http://localhost:5000/note/${noteId}`, {
+    fetch(`${window.API_URL}/note/${noteId}`, {
         method: "PUT",
         body: JSON.stringify({ title: editTitle, content: editContent, categories: editCategories }),
         credentials: "include"
@@ -207,7 +206,7 @@ function sendNote() {
     document.getElementById("noteTitle").value = ""
     document.getElementById("noteContent").value = ""
     document.getElementById("noteCategories").value = ""
-    fetch(`http://localhost:5000/note`, {
+    fetch(`${window.API_URL}/note`, {
         method: "POST",
         body: JSON.stringify({ title: noteTitle, content: noteContent, categories: categories }),
         credentials: "include"
@@ -227,7 +226,7 @@ function sendNote() {
     document.getElementById("noteTitle").value = ""
     document.getElementById("noteContent").value = ""
     document.getElementById("noteCategories").value = ""
-    fetch(`http://localhost:5000/note`, {
+    fetch(`${window.API_URL}/note`, {
         method: "POST",
         body: JSON.stringify({ title: noteTitle, content: noteContent, categories: categories }),
         credentials: "include"
@@ -245,7 +244,7 @@ function deleteNote(noteId) {
     if (person !== "delete") {
         return
     }
-    fetch(`http://localhost:5000/note/${noteId}`, { method: "DELETE", credentials: "include" })
+    fetch(`${window.API_URL}/note/${noteId}`, { method: "DELETE", credentials: "include" })
         .then(response => response.json())
         .then(data => {
             fetchNotes()

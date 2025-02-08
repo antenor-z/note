@@ -1,8 +1,7 @@
 function login() {
     const username = document.getElementById("username").value
     const password = document.getElementById("password").value
-    console.log(password)
-    fetch("http://localhost:5000/login",
+    fetch(`${window.API_URL}/login`,
         {
             method: "POST",
             body: JSON.stringify({ username: username, password: password }),
