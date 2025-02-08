@@ -14,6 +14,7 @@ function try_login() {
             if (response.status !== 200) {
                 window.location = "login.html"
             }
+            fetchNotes()
         })
 }
 try_login()

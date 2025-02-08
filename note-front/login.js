@@ -1,6 +1,7 @@
-if (response.status === 401) {
-    const username = window.prompt("username", "")
-    const password = window.prompt("password", "")
+function login() {
+    const username = document.getElementById("username").value
+    const password = document.getElementById("password").value
+    console.log(password)
     fetch("http://localhost:5000/login",
         {
             method: "POST",
@@ -9,9 +10,8 @@ if (response.status === 401) {
         })
         .then(data => {
             if (data.status !== 200) {
-                try_login()
+                return
             }
-            fetchNotes()
+            document.location = "/"
         })
 }
-})
