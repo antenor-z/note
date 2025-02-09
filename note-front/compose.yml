@@ -1,8 +1,8 @@
 services:
-  note-back:
+  note-front:
     build: .
     ports:
-      - "5003:5003"
+      - "3003:3003"
     restart: unless-stopped
     network: net
 
