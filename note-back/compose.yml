@@ -4,7 +4,8 @@ services:
     ports:
       - "5003:5003"
     restart: unless-stopped
-    network: net
+    networks:
+      - net
 
 networks:
   net:
