@@ -15,6 +15,8 @@ content {
 #categories-container {
     display: flex;
     background-color: #1100aa;
+    overflow-x: scroll;
+    padding: 21px;
 }
 
 h2 {
@@ -51,6 +53,28 @@ button:hover {
     color: #fff;
     background-color: #777;
     box-shadow: #edb90c 0px 0px 0;
+}
+
+input[type="checkbox"] {
+    display: none;
+}
+
+.checkbox-label {
+    background-color: #444;
+    box-shadow: #000 6px 6px 0;
+    margin-right: 15px;
+    padding: 5px 20px;
+}
+.checkbox-label:hover {
+    box-shadow: #000 0px 0px 0;
+    color: #fff;
+    background-color: #777;
+    cursor: pointer;
+}
+input[type="checkbox"]:checked + .checkbox-label {
+    background-color: rgb(128, 0, 0);
+    color: white;
+    font-weight: bold;
 }
 
 input {

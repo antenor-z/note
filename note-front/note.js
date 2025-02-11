@@ -49,6 +49,7 @@ function fetchCategories() {
                 const label = document.createElement('label')
                 label.htmlFor = element
                 label.innerText = element
+                label.classList.add("checkbox-label")
 
                 catDiv.appendChild(checkBox)
                 catDiv.appendChild(label)
