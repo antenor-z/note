@@ -90,10 +90,12 @@ func DeleteNote(noteId int) error {
 
 func UpdateNote(noteId int, title string, content string, categoryNames []string) error {
 	var note Note
-	result := db.First(&note, noteId)
-	if result.Error != nil {
-		return result.Error
+	if err := db.Preload("Categories").First(&note, noteId).Error; err != nil {
+		return err
 	}
+
+	// Store previous categories before updating
+	prevCategories := note.Categories
 
 	note.Title = title
 	note.Content = content
@@ -110,17 +112,16 @@ func UpdateNote(noteId int, title string, content string, categoryNames []string
 		return err
 	}
 
-	result = db.Save(&note)
-
-	for _, category := range note.Categories {
+	for _, prevCat := range prevCategories {
 		var count int64
 		db.Model(&Note{}).Joins("JOIN note_categories ON notes.id = note_categories.note_id").
-			Where("note_categories.category_id = ?", category.ID).Count(&count)
+			Where("note_categories.category_id = ?", prevCat.ID).Count(&count)
+
 		if count == 0 {
-			db.Delete(&Category{}, category.ID)
+			db.Delete(&Category{}, prevCat.ID)
 		}
 	}
-	return result.Error
+	return db.Save(&note).Error
 }
 
 func GetNotesByCategory(categoryNames []string) ([]Note, error) {
