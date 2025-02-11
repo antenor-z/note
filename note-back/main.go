@@ -28,8 +28,8 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	r.POST("/login", login)
-	r.POST("/logout", logout)
+	r.POST("/api/login", login)
+	r.POST("/api/logout", logout)
 	internal := r.Group("/")
 
 	internal.Use(authMiddleware())
