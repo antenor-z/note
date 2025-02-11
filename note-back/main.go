@@ -40,7 +40,7 @@ func main() {
 	internal.GET("/category", GetAllCategories)
 	internal.POST("/noteCat", GetNotesByCategory)
 	internal.DELETE("/note/:id", deleteNote)
-	r.Run(":5000")
+	r.Run(":5003")
 
 }
 
