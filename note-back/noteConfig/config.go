@@ -23,6 +23,11 @@ func GetDomain() string {
 	return config.Domain
 }
 
+func IsDebug() bool {
+	return config.DebugMode
+}
+
 type Config struct {
-	Domain string
+	Domain    string
+	DebugMode bool
 }

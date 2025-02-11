@@ -111,6 +111,15 @@ func UpdateNote(noteId int, title string, content string, categoryNames []string
 	}
 
 	result = db.Save(&note)
+
+	for _, category := range note.Categories {
+		var count int64
+		db.Model(&Note{}).Joins("JOIN note_categories ON notes.id = note_categories.note_id").
+			Where("note_categories.category_id = ?", category.ID).Count(&count)
+		if count == 0 {
+			db.Delete(&Category{}, category.ID)
+		}
+	}
 	return result.Error
 }
 

@@ -17,7 +17,11 @@ func main() {
 	auth.ConfigInit()
 	noteConfig.ConfigInit()
 
-	gin.SetMode(gin.DebugMode)
+	if noteConfig.IsDebug() {
+		gin.SetMode(gin.DebugMode)
+	} else {
+		gin.SetMode(gin.ReleaseMode)
+	}
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{noteConfig.GetDomain()},
@@ -47,17 +51,15 @@ func main() {
 func authMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token, err := c.Cookie("auth_token")
-		if err != nil || auth.Validate(token) == false {
+		if err != nil || !auth.Validate(token) {
 			c.JSON(401, "Unauthorized")
 			c.Abort()
 		}
 	}
-
 }
 
 func isLogged(c *gin.Context) {
 	c.JSON(200, gin.H{"data": "ok"})
-	return
 }
 
 func GetAllCategories(c *gin.Context) {
@@ -70,7 +72,7 @@ func postNote(c *gin.Context) {
 	var n Note
 	err := c.ShouldBindJSON(&n)
 	if err != nil {
-		c.String(400, "error")
+		c.JSON(400, gin.H{"error": "Invalid request"})
 		return
 	}
 
@@ -82,7 +84,8 @@ func postNote(c *gin.Context) {
 func GetAllNotes(c *gin.Context) {
 	notes, err := db.GetAllNotes()
 	if err != nil {
-		panic("error on getNote")
+		c.JSON(400, gin.H{"error": "Invalid request"})
+		return
 	}
 	c.JSON(200, gin.H{"data": notes})
 }
@@ -92,13 +95,14 @@ func GetNotesByCategory(c *gin.Context) {
 	var nc NoteCategory
 	err := c.ShouldBindJSON(&nc)
 	if err != nil {
-		c.String(400, "error")
+		c.JSON(400, gin.H{"error": "Invalid request"})
 		return
 	}
 
 	notes, err := db.GetNotesByCategory(nc.Categories)
 	if err != nil {
-		panic("error on getNote")
+		c.JSON(400, gin.H{"error": "Invalid request"})
+		return
 	}
 
 	c.JSON(200, gin.H{"data": notes})
@@ -109,7 +113,8 @@ func putNote(c *gin.Context) {
 	var n Note
 	noteId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		panic(err)
+		c.JSON(400, gin.H{"error": "Invalid request"})
+		return
 	}
 	err2 := c.ShouldBindJSON(&n)
 	if err2 != nil {
@@ -125,7 +130,8 @@ func putNote(c *gin.Context) {
 func deleteNote(c *gin.Context) {
 	noteId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		panic(err)
+		c.JSON(400, gin.H{"error": "Invalid request"})
+		return
 	}
 	db.DeleteNote(noteId)
 	c.JSON(200, gin.H{"status": "ok"})
