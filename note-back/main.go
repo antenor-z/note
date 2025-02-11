@@ -33,13 +33,13 @@ func main() {
 	internal := r.Group("/")
 
 	internal.Use(authMiddleware())
-	internal.POST("/note", postNote)
-	internal.PUT("/note/:id", putNote)
-	internal.GET("/note", GetAllNotes)
-	internal.GET("/isLogged", isLogged)
-	internal.GET("/category", GetAllCategories)
-	internal.POST("/noteCat", GetNotesByCategory)
-	internal.DELETE("/note/:id", deleteNote)
+	internal.POST("/api/note", postNote)
+	internal.PUT("/api/note/:id", putNote)
+	internal.GET("/api/note", GetAllNotes)
+	internal.GET("/api/isLogged", isLogged)
+	internal.GET("/api/category", GetAllCategories)
+	internal.POST("/api/noteCat", GetNotesByCategory)
+	internal.DELETE("/api/note/:id", deleteNote)
 	r.Run(":5003")
 
 }
