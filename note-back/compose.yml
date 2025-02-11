@@ -6,6 +6,8 @@ services:
     restart: unless-stopped
     networks:
       - net
+    volumes:
+      - ./db.db:/app/db.db
 
 networks:
   net:
