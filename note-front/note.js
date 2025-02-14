@@ -2,6 +2,7 @@ function toggleAddNote() {
     const addNote = document.getElementById('addNote')
     if (addNote.style.display === "none") {
         addNote.style.display = "grid"
+        document.getElementById("noteTitle").focus()
     }
     else {
         addNote.style.display = "none"
@@ -177,6 +178,7 @@ function editNoteToggle(noteId) {
     else {
         noteDiv.style.display = "grid"
         noteButton.style.display = "none"
+        document.getElementById("editTitle" + noteId).focus()
     }
 }
 
