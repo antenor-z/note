@@ -16,7 +16,7 @@ go build
 
 On the note-front, you can use a simple Python server
 ```
-python3 -m http.server 3000
+python3 -m http.server 3003
 ```
 
 ## Deploying
