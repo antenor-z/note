@@ -72,7 +72,7 @@ function fetchNotes() {
         }
     }
 
-    fetch(`${window.API_URL}/noteCat`,
+    fetch(`${window.API_URL}/note/category`,
         {
             method: "POST",
             body: JSON.stringify({ categories: catList }),
