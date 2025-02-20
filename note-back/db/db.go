@@ -13,12 +13,19 @@ type Category struct {
 	Notes []*Note `gorm:"many2many:note_categories;" json:"notes"`
 }
 type Note struct {
-	ID         uint        `gorm:"primaryKey" json:"id"`
-	CreatedAt  time.Time   `json:"createdAt"`
-	UpdatedAt  time.Time   `json:"updatedAt"`
-	Title      string      `json:"title"`
-	Content    string      `json:"content"`
-	Categories []*Category `gorm:"many2many:note_categories;" json:"categories"`
+	ID          uint         `gorm:"primaryKey" json:"id"`
+	CreatedAt   time.Time    `json:"createdAt"`
+	UpdatedAt   time.Time    `json:"updatedAt"`
+	Title       string       `json:"title"`
+	Content     string       `json:"content"`
+	Categories  []*Category  `gorm:"many2many:note_categories;" json:"categories"`
+	Attachments []Attachment `json:"attachments"`
+}
+type Attachment struct {
+	ID       uint   `gorm:"primaryKey" json:"id"`
+	NoteId   uint   `json:"noteId"`
+	Name     string `json:"name"`
+	FileUUID string `json:"path"`
 }
 
 var db *gorm.DB
@@ -47,9 +54,26 @@ func InsertNote(title string, content string, categoryNames []string) error {
 	return result.Error
 }
 
+func InsertAttachment(name string, fileUUID string) error {
+	attachment := Attachment{Name: name, FileUUID: fileUUID}
+	result := db.Create(&attachment)
+	return result.Error
+}
+
+func GetAttachmentPath(fileId int) error {
+	var attachments []Attachment
+	db.First(&attachments, fileId)
+	return result.Error
+}
+
+func DeleteAttachment(fileId int) error {
+	result := db.Delete(&Attachment{}, fileId)
+	return result.Error
+}
+
 func GetAllNotes() ([]Note, error) {
 	var notes []Note
-	err := db.Model(&Note{}).Preload("Categories").Find(&notes).Error
+	err := db.Model(&Note{}).Preload("Categories").Preload("Attachments").Find(&notes).Error
 	return notes, err
 }
 

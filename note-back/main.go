@@ -5,11 +5,13 @@ import (
 	"note/auth"
 	"note/db"
 	"note/noteConfig"
+	"path"
 	"strconv"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 func main() {
@@ -23,6 +25,7 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	r := gin.Default()
+	r.MaxMultipartMemory = 256 << 20 // 256MB file max
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{noteConfig.GetDomain()},
 		AllowMethods:     []string{"PUT", "POST", "DELETE"},
@@ -42,10 +45,45 @@ func main() {
 	internal.GET("/api/note", GetAllNotes)
 	internal.GET("/api/isLogged", isLogged)
 	internal.GET("/api/category", GetAllCategories)
-	internal.POST("/api/noteCat", GetNotesByCategory)
+	internal.POST("/api/note/category", GetNotesByCategory)
 	internal.DELETE("/api/note/:id", deleteNote)
+	internal.POST("/api/note/attachment", postAttachment)
+	internal.GET("/api/note/attachment/:id", getAttachment)
+	internal.DELETE("/api/note/attachment/:id", deleteAttachment)
 	r.Run(":5003")
 
+}
+
+func postAttachment(c *gin.Context) {
+	file, _ := c.FormFile("file")
+	name := file.Filename
+	internalName := uuid.New().String()
+	err := db.InsertAttachment(name, internalName)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid request"})
+		return
+	}
+	c.SaveUploadedFile(file, path.Join("uploads", internalName))
+	c.JSON(200, gin.H{"data": "Upload OK"})
+}
+func getAttachment(c *gin.Context) {
+	fileId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid attachment id"})
+		return
+	}
+}
+func deleteAttachment(c *gin.Context) {
+	fileId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid attachment id"})
+		return
+	}
+	err = db.DeleteAttachment(fileId)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Failed to delete attachment"})
+		return
+	}
 }
 
 func authMiddleware() gin.HandlerFunc {
