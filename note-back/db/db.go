@@ -1,6 +1,7 @@
 package db
 
 import (
+	"path"
 	"time"
 
 	"gorm.io/driver/sqlite"
@@ -60,10 +61,13 @@ func InsertAttachment(name string, fileUUID string) error {
 	return result.Error
 }
 
-func GetAttachmentPath(fileId int) error {
-	var attachments []Attachment
-	db.First(&attachments, fileId)
-	return result.Error
+func GetAttachmentPath(fileId int) (string, error) {
+	var attachment Attachment
+	err := db.First(&attachment, fileId)
+	if err != nil {
+		return "", err.Error
+	}
+	return path.Join("uploads", attachment.FileUUID), nil
 }
 
 func DeleteAttachment(fileId int) error {

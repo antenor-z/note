@@ -72,6 +72,8 @@ func getAttachment(c *gin.Context) {
 		c.JSON(400, gin.H{"error": "Invalid attachment id"})
 		return
 	}
+	db.GetAttachmentPath(fileId)
+	
 }
 func deleteAttachment(c *gin.Context) {
 	fileId, err := strconv.Atoi(c.Param("id"))
