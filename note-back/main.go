@@ -5,6 +5,7 @@ import (
 	"note/auth"
 	"note/db"
 	"note/noteConfig"
+	"os"
 	"path"
 	"strconv"
 	"time"
@@ -125,7 +126,19 @@ func deleteAttachment(c *gin.Context) {
 		return
 	}
 
+	attachment, err := db.GetAttachment(uint(noteId), attachmentId)
+	if err != nil {
+		c.JSON(404, gin.H{"error": "Attachment not found"})
+		return
+	}
+
 	err = db.DeleteAttachment(uint(noteId), attachmentId)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Failed to delete attachment"})
+		return
+	}
+
+	err = os.Remove(path.Join("uploads", attachment.FileUUID))
 	if err != nil {
 		c.JSON(400, gin.H{"error": "Failed to delete attachment"})
 		return
