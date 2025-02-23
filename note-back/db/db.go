@@ -1,7 +1,6 @@
 package db
 
 import (
-	"path"
 	"time"
 
 	"gorm.io/driver/sqlite"
@@ -24,7 +23,7 @@ type Note struct {
 }
 type Attachment struct {
 	ID       uint   `gorm:"primaryKey" json:"id"`
-	NoteId   uint   `json:"noteId"`
+	NoteID   uint   `json:"noteId"`
 	Name     string `json:"name"`
 	FileUUID string `json:"path"`
 }
@@ -38,7 +37,7 @@ func Init() {
 		panic("failed to connect database")
 	}
 
-	db.AutoMigrate(&Note{})
+	db.AutoMigrate(&Note{}, &Attachment{})
 }
 
 func InsertNote(title string, content string, categoryNames []string) error {
@@ -59,24 +58,21 @@ func InsertNote(title string, content string, categoryNames []string) error {
 	return result.Error
 }
 
-func InsertAttachment(name string, fileUUID string) error {
-	attachment := Attachment{Name: name, FileUUID: fileUUID}
+func InsertAttachment(noteId uint, name string, fileUUID string) error {
+	attachment := Attachment{NoteID: noteId, Name: name, FileUUID: fileUUID}
 	result := db.Create(&attachment)
 	return result.Error
 }
 
-func GetAttachmentPath(fileId int) (string, error) {
-	var attachment Attachment
-	err := db.First(&attachment, fileId)
-	if err != nil {
-		return "", err.Error
-	}
-	return path.Join("uploads", attachment.FileUUID), nil
+func DeleteAttachment(noteId uint, attachmentId int) error {
+	result := db.Where("note_id = ?", noteId).Delete(&Attachment{}, attachmentId)
+	return result.Error
 }
 
-func DeleteAttachment(fileId int) error {
-	result := db.Delete(&Attachment{}, fileId)
-	return result.Error
+func GetAttachment(noteId uint, attachmentId int) (Attachment, error) {
+	var attachment Attachment
+	err := db.Where("id = ? AND note_id = ?", attachmentId, noteId).First(&attachment).Error
+	return attachment, err
 }
 
 func GetAllNotes() ([]Note, error) {
@@ -162,6 +158,7 @@ func GetNotesByCategory(categoryNames []string) ([]Note, error) {
 		Joins("JOIN categories ON categories.id = note_categories.category_id").
 		Where("categories.name IN ?", categoryNames).
 		Preload("Categories").
+		Preload("Attachments").
 		Find(&notes).Error
 	return notes, err
 }

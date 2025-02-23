@@ -47,45 +47,91 @@ func main() {
 	internal.GET("/api/category", GetAllCategories)
 	internal.POST("/api/note/category", GetNotesByCategory)
 	internal.DELETE("/api/note/:id", deleteNote)
-	internal.POST("/api/note/attachment", postAttachment)
-	internal.GET("/api/note/attachment/:id", getAttachment)
-	internal.DELETE("/api/note/attachment/:id", deleteAttachment)
+	internal.POST("/api/note/:id/attachment", postAttachment)
+	internal.DELETE("/api/note/:id/attachment/:attachmentId", deleteAttachment)
+	internal.GET("/api/note/:id/attachment/:attachmentId/file", getAttachmentFile)
 	r.Run(":5003")
 
 }
 
 func postAttachment(c *gin.Context) {
-	file, _ := c.FormFile("file")
+	noteIdParam := c.Param("id")
+	noteId, err := strconv.Atoi(noteIdParam)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid note ID"})
+		return
+	}
+
+	file, err := c.FormFile("file")
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid file"})
+		return
+	}
+
 	name := file.Filename
 	internalName := uuid.New().String()
-	err := db.InsertAttachment(name, internalName)
+	err = db.InsertAttachment(uint(noteId), name, internalName)
 	if err != nil {
-		c.JSON(400, gin.H{"error": "Invalid request"})
+		c.JSON(500, gin.H{"error": "Failed to insert attachment"})
 		return
 	}
-	c.SaveUploadedFile(file, path.Join("uploads", internalName))
+
+	err = c.SaveUploadedFile(file, path.Join("uploads", internalName))
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to save file"})
+		return
+	}
+
 	c.JSON(200, gin.H{"data": "Upload OK"})
 }
-func getAttachment(c *gin.Context) {
-	fileId, err := strconv.Atoi(c.Param("id"))
+
+func getAttachmentFile(c *gin.Context) {
+	noteIdParam := c.Param("id")
+	noteId, err := strconv.Atoi(noteIdParam)
 	if err != nil {
-		c.JSON(400, gin.H{"error": "Invalid attachment id"})
+		c.JSON(400, gin.H{"error": "Invalid note ID"})
 		return
 	}
-	db.GetAttachmentPath(fileId)
-	
+
+	attachmentIdParam := c.Param("attachmentId")
+	attachmentId, err := strconv.Atoi(attachmentIdParam)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid attachment ID"})
+		return
+	}
+
+	attachment, err := db.GetAttachment(uint(noteId), attachmentId)
+	if err != nil {
+		c.JSON(404, gin.H{"error": "Attachment not found"})
+		return
+	}
+
+	filePath := path.Join("uploads", attachment.FileUUID)
+	c.FileAttachment(filePath, attachment.Name)
 }
+
 func deleteAttachment(c *gin.Context) {
-	fileId, err := strconv.Atoi(c.Param("id"))
+	noteIdParam := c.Param("id")
+	noteId, err := strconv.Atoi(noteIdParam)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid note id"})
+		return
+	}
+
+	attachmentIdParam := c.Param("attachmentId")
+	attachmentId, err := strconv.Atoi(attachmentIdParam)
 	if err != nil {
 		c.JSON(400, gin.H{"error": "Invalid attachment id"})
 		return
 	}
-	err = db.DeleteAttachment(fileId)
+
+	err = db.DeleteAttachment(uint(noteId), attachmentId)
 	if err != nil {
 		c.JSON(400, gin.H{"error": "Failed to delete attachment"})
 		return
 	}
+
+	c.JSON(200, gin.H{"status": "ok"})
 }
 
 func authMiddleware() gin.HandlerFunc {
