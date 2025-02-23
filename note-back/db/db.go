@@ -44,6 +44,10 @@ func Init() {
 func InsertNote(title string, content string, categoryNames []string) error {
 	var categories []*Category
 
+	if len(categoryNames) == 1 && categoryNames[0] == "" {
+		categoryNames = []string{"(uncategorized)"}
+	}
+
 	for _, name := range categoryNames {
 		c := Category{Name: name}
 		db.FirstOrCreate(&c, Category{Name: name})
