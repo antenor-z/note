@@ -153,12 +153,69 @@ function fetchNotes() {
                 const content = document.createElement('p')
                 content.textContent = element.content;
 
+                // Begin Attachments section
+                const attachmentsDiv = document.createElement('div')
+                attachmentsDiv.classList.add('attachments')
+                const attachmentsTitle = document.createElement('h3')
+                attachmentsTitle.textContent = 'Attachments:'
+                attachmentsDiv.appendChild(attachmentsTitle)
+
+                if (element.attachments !== null) {
+                    element.attachments.forEach(attachment => {
+                        const attachmentDiv = document.createElement('div')
+                        attachmentDiv.classList.add('attachment')
+                        
+                        const link = document.createElement('a')
+                        link.href = `${window.API_URL}/note/${element.id}/attachment/${attachment.id}/file`
+                        link.textContent = attachment.name
+                        link.target = '_blank'
+                        
+                        // Delete button
+                        const deleteBtn = document.createElement('button')
+                        deleteBtn.textContent = '×'
+                        deleteBtn.classList.add('delete-attachment')
+                        deleteBtn.addEventListener('click', (e) => {
+                            e.preventDefault()
+                            deleteAttachment(element.id, attachment.id)
+                        })
+
+                        attachmentDiv.appendChild(link)
+                        attachmentDiv.appendChild(deleteBtn)
+                        attachmentsDiv.appendChild(attachmentDiv)
+                    })
+                }
+
+                // End Attachments section
+
+                // Begin Upload section
+                const uploadDiv = document.createElement('div')
+                uploadDiv.classList.add('upload-section')
+                
+                const fileInput = document.createElement('input')
+                fileInput.type = 'file'
+                fileInput.id = `fileInput${element.id}`
+                
+                const uploadBtn = document.createElement('button')
+                uploadBtn.textContent = 'Upload File'
+                uploadBtn.addEventListener('click', () => {
+                    const input = document.getElementById(`fileInput${element.id}`)
+                    if (input.files.length > 0) {
+                        uploadFile(element.id, input.files[0])
+                    }
+                })
+
+                uploadDiv.appendChild(fileInput)
+                uploadDiv.appendChild(uploadBtn)
+                // End Upload section
+
                 noteDiv.appendChild(title)
                 noteDiv.appendChild(categories)
                 noteDiv.appendChild(createdAt)
                 noteDiv.appendChild(content)
                 noteDiv.appendChild(editDiv)
                 noteDiv.appendChild(btnEdit)
+                editDiv.appendChild(uploadDiv)
+                noteDiv.appendChild(attachmentsDiv)
 
                 container.appendChild(noteDiv)
             })
@@ -256,4 +313,28 @@ function deleteNote(noteId) {
             console.error('Error fetching:', error)
         })
 }
+function deleteAttachment(noteId, attachmentId) {
+    if (!confirm('Are you sure you want to delete this attachment?')) return
+    
+    fetch(`${window.API_URL}/note/${noteId}/attachment/${attachmentId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+    })
+    .then(response => {
+        if (response.ok) fetchNotes()
+    })
+}
 
+function uploadFile(noteId, file) {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    fetch(`${window.API_URL}/note/${noteId}/attachment`, {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
+    })
+    .then(response => {
+        if (response.ok) fetchNotes()
+    })
+}
