@@ -156,11 +156,11 @@ function fetchNotes() {
                 // Begin Attachments section
                 const attachmentsDiv = document.createElement('div')
                 attachmentsDiv.classList.add('attachments')
-                const attachmentsTitle = document.createElement('h3')
-                attachmentsTitle.textContent = 'Attachments:'
-                attachmentsDiv.appendChild(attachmentsTitle)
 
                 if (element.attachments !== null) {
+                    const attachmentsTitle = document.createElement('h3')
+                    attachmentsTitle.textContent = 'Attachments:'
+                    attachmentsDiv.appendChild(attachmentsTitle)
                     element.attachments.forEach(attachment => {
                         const attachmentDiv = document.createElement('div')
                         attachmentDiv.classList.add('attachment')
@@ -184,6 +184,11 @@ function fetchNotes() {
                         attachmentsDiv.appendChild(attachmentDiv)
                     })
                 }
+		else {
+                    const attachmentsTitle = document.createElement('h3')
+                    attachmentsTitle.textContent = '(no attachments)'
+                    attachmentsDiv.appendChild(attachmentsTitle)
+		}
 
                 // End Attachments section
 
@@ -196,7 +201,7 @@ function fetchNotes() {
                 fileInput.id = `fileInput${element.id}`
                 
                 const uploadBtn = document.createElement('button')
-                uploadBtn.textContent = 'Upload File'
+                uploadBtn.textContent = 'Upload'
                 uploadBtn.addEventListener('click', () => {
                     const input = document.getElementById(`fileInput${element.id}`)
                     if (input.files.length > 0) {
