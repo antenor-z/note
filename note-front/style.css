@@ -43,7 +43,7 @@ h4 {
 
 button {
     background-color: #aaa;
-    padding: 10px 15px;
+    padding: 7px 15px;
     margin-bottom: 10px;
     border: 0;
     font-size: 16px;
@@ -136,4 +136,10 @@ textarea {
 #authfail {
     font-family: monospace;
     display: none;
+}
+
+.delete-attachment {
+    padding: 0;
+    width: 20px;
+    margin-left: 10px;
 }
