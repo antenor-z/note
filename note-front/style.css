@@ -59,6 +59,17 @@ input[type="checkbox"] {
     display: none;
 }
 
+input[type="file"] {
+    background-color: #000;
+}
+
+.upload-section {
+    margin-top: 20px;
+    button {
+        margin-left: 20px;
+    }
+}
+
 .checkbox-label {
     background-color: #444;
     box-shadow: #000 6px 6px 0;
