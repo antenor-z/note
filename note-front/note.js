@@ -157,7 +157,7 @@ function fetchNotes() {
                 const attachmentsDiv = document.createElement('div')
                 attachmentsDiv.classList.add('attachments')
 
-                if (element.attachments !== null) {
+                if (element.attachments.length > 0) {
                     const attachmentsTitle = document.createElement('h3')
                     attachmentsTitle.textContent = 'Attachments:'
                     attachmentsDiv.appendChild(attachmentsTitle)
