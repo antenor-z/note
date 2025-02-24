@@ -3,6 +3,7 @@ body {
     color: #eee;
     font-size: 18px;
     font-family: sans-serif;
+    background-image: url("/img/egg-shell.png");
 }
 
 p {
