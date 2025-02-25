@@ -77,7 +77,11 @@ func GetAttachment(noteId uint, attachmentId int) (Attachment, error) {
 
 func GetAllNotes() ([]Note, error) {
 	var notes []Note
-	err := db.Model(&Note{}).Preload("Categories").Preload("Attachments").Find(&notes).Error
+	err := db.Model(&Note{}).
+	Order("notes.updated_at DESC").
+	Preload("Categories").
+	Preload("Attachments").
+	Find(&notes).Error
 	return notes, err
 }
 
@@ -157,6 +161,7 @@ func GetNotesByCategory(categoryNames []string) ([]Note, error) {
 	err := db.Joins("JOIN note_categories ON note_categories.note_id = notes.id").
 		Joins("JOIN categories ON categories.id = note_categories.category_id").
 		Where("categories.name IN ?", categoryNames).
+		Order("notes.updated_at DESC").
 		Preload("Categories").
 		Preload("Attachments").
 		Find(&notes).Error
