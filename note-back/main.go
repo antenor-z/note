@@ -266,7 +266,7 @@ func logout(c *gin.Context) {
 
 type Note struct {
 	Title      string   `json:"title" binding:"required"`
-	Content    string   `json:"content" binding:"required"`
+	Content    string   `json:"content"`
 	Categories []string `json:"categories" binding:"required"`
 }
 type NoteCategory struct {

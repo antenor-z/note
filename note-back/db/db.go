@@ -53,10 +53,6 @@ func InsertNote(title string, content string, categoryNames []string) error {
 		categories = append(categories, &c)
 	}
 
-	if content == "" {
-		content = " "
-	}
-
 	note := Note{Title: title, Content: content, Categories: categories}
 	result := db.Create(&note)
 	return result.Error
@@ -128,10 +124,6 @@ func UpdateNote(noteId int, title string, content string, categoryNames []string
 	var note Note
 	if err := db.Preload("Categories").First(&note, noteId).Error; err != nil {
 		return err
-	}
-
-	if content == "" {
-		content = " "
 	}
 
 	// Store previous categories before updating
