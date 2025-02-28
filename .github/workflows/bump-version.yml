@@ -1,0 +1,35 @@
+name: Version Bump Automation
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  version_bump:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.x"
+
+    - name: Run Version Bump
+      run: python bump_version.py
+
+    - name: Commit Version Bump
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions@github.com"
+        git add .
+        git commit -m "chore: bump version" || echo "No changes to commit"
+        git push
+
+    - name: Create Git Tag
+      run: |
+        git tag v$(cat VERSION)
+        git push origin v$(cat VERSION)
