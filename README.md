@@ -1,7 +1,7 @@
 NOTE
 ----
 
-Note creating program
+Note creating program 
 
 ## Development
 Use the same instruction for deploying, but with the compose
