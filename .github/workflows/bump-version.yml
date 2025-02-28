@@ -32,4 +32,4 @@ jobs:
     - name: Create Git Tag
       run: |
         git tag v$(cat VERSION)
-        git push origin v$(cat VERSION)
+        git push origin v$(cat VERSION) || echo "No new version"
