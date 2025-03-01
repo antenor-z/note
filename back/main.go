@@ -249,8 +249,8 @@ func login(c *gin.Context) {
 		c.JSON(401, gin.H{"error": "Wrong credential"})
 		return
 	}
-	c.SetSameSite(http.SameSiteStrictMode)
-	c.SetCookie("auth_token", token, 3600, "/", noteConfig.GetDomain(), true, true)
+	c.SetSameSite(http.SameSiteLaxMode)
+	c.SetCookie("auth_token", token, 604800, "/", noteConfig.GetDomain(), true, true)
 
 	c.JSON(200, gin.H{"message": "Login successful"})
 }
