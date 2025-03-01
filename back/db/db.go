@@ -27,6 +27,10 @@ type Attachment struct {
 	Name     string `json:"name"`
 	FileUUID string `json:"path"`
 }
+type ActiveSession struct {
+	ID    uint   `gorm:"primaryKey" json:"id"`
+	Token string `json:"token"`
+}
 
 var db *gorm.DB
 
@@ -37,7 +41,7 @@ func Init() {
 		panic("failed to connect database")
 	}
 
-	db.AutoMigrate(&Note{}, &Attachment{})
+	db.AutoMigrate(&Note{}, &Attachment{}, &ActiveSession{})
 }
 
 func InsertNote(title string, content string, categoryNames []string) error {
@@ -166,4 +170,20 @@ func GetNotesByCategory(categoryNames []string) ([]Note, error) {
 		Preload("Attachments").
 		Find(&notes).Error
 	return notes, err
+}
+
+func InsertSession(token string) error {
+	session := ActiveSession{Token: token}
+	result := db.Create(&session)
+	return result.Error
+}
+
+func IsSessionValid(token string) bool {
+	result := db.Where("token = ?", token).Find(&ActiveSession{})
+	return result.Error == nil
+}
+
+func DeleteSession(token string) error {
+	result := db.Where("token = ?", token).Delete(&ActiveSession{})
+	return result.Error
 }
