@@ -4,10 +4,14 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"errors"
+	"note/db"
 	"os"
 
 	"github.com/BurntSushi/toml"
 )
+
+var authSecret Auth
+var activeSessions = make(map[string]bool)
 
 func tokenGenerator() string {
 	b := make([]byte, 128)
@@ -15,13 +19,11 @@ func tokenGenerator() string {
 	return base64.StdEncoding.EncodeToString(b)
 }
 
-var authSecret Auth
-var activeSessions = make(map[string]bool)
-
 func Login(username string, password string) (string, error) {
 	if username == authSecret.Username && password == authSecret.Password {
 		token := tokenGenerator()
 		activeSessions[token] = true
+		db.InsertSession(token)
 		return token, nil
 	}
 	return "", errors.New("invalid auth")
@@ -30,12 +32,21 @@ func Login(username string, password string) (string, error) {
 func Logout(token string) (string, error) {
 	if activeSessions[token] {
 		delete(activeSessions, token)
+		db.DeleteSession(token)
+		return "logged out", nil
 	}
 	return "", errors.New("invalid auth")
 }
 
 func Validate(token string) bool {
-	return activeSessions[token]
+	if activeSessions[token] {
+		return true
+	}
+	if db.IsSessionValid(token) {
+		activeSessions[token] = true
+		return true
+	}
+	return false
 }
 
 func ConfigInit() {
