@@ -10,6 +10,10 @@ p {
     white-space: break-spaces;
 }
 
+a, a:visited {
+    color: #31bbff
+}
+
 content {
     padding: 0 20px 20px 20px;
     max-width: 900px;
