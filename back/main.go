@@ -250,7 +250,7 @@ func login(c *gin.Context) {
 		return
 	}
 	c.SetSameSite(http.SameSiteStrictMode)
-	c.SetCookie("auth_token", token, 3600, "/", noteConfig.GetDomain(), true, true)
+	c.SetCookie("auth_token", token, 604800, "/", noteConfig.GetDomain(), true, true)
 
 	c.JSON(200, gin.H{"message": "Login successful"})
 }
