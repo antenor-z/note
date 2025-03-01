@@ -9,7 +9,7 @@ services:
     volumes:
       - ./db.db:/app/db.db
       - ./uploads:/app/uploads/
-
+#test
 networks:
   net:
     external: true
