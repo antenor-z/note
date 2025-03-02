@@ -126,10 +126,6 @@ textarea {
     display: grid;
 }
 
-#addNote {
-    display: none;
-}
-
 .box {
     background-color: #333;
     margin-top: 15px;

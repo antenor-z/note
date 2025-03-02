@@ -1,3 +1,4 @@
+document.getElementById('addNote').style.display = "none"
 function toggleAddNote() {
     const addNote = document.getElementById('addNote')
     if (addNote.style.display === "none") {
