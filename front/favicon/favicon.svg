@@ -12,10 +12,34 @@
    inkscape:export-ydpi="96"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
   <defs
-     id="defs1" />
+     id="defs1">
+    <linearGradient
+       id="linearGradient1"
+       inkscape:collect="always">
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1;"
+         offset="0"
+         id="stop1" />
+      <stop
+         style="stop-color:#cbcbcb;stop-opacity:1;"
+         offset="1"
+         id="stop2" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient1"
+       id="linearGradient2"
+       x1="121.46936"
+       y1="111.1387"
+       x2="185.05753"
+       y2="178.14098"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-1.8805351,-2.1270564)" />
+  </defs>
   <sodipodi:namedview
      id="namedview1"
      pagecolor="#505050"
@@ -26,9 +50,9 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#505050"
      showguides="true"
-     inkscape:zoom="1.9021172"
-     inkscape:cx="179.79965"
-     inkscape:cy="128.01525"
+     inkscape:zoom="1"
+     inkscape:cx="134"
+     inkscape:cy="176.5"
      inkscape:window-width="2560"
      inkscape:window-height="1009"
      inkscape:window-x="-8"
@@ -40,39 +64,22 @@
 @media (prefers-color-scheme: dark) { :root { filter: none; } }
 </style>
   <rect
-     style="fill:#e6e6e6;fill-opacity:1;stroke:#ffffff;stroke-width:0;stroke-linecap:round;stroke-dasharray:none;paint-order:stroke fill markers"
-     id="rect4"
-     width="327.49219"
-     height="317.50333"
-     x="-14.271835"
-     y="-8.4888058"
-     ry="11.205066" />
+     style="fill:#f9f9f9;stroke:#ffffff;stroke-width:0;stroke-linecap:round;paint-order:stroke fill markers"
+     id="rect1"
+     width="300.00708"
+     height="299.99612"
+     x="-3.8250029e-08"
+     y="-4.6697732e-08" />
   <text
      xml:space="preserve"
-     style="font-weight:bold;font-size:148.047px;line-height:0.8;font-family:'Miriam Libre';-inkscape-font-specification:'Miriam Libre Bold';text-align:start;letter-spacing:1.11035px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#ba5959;fill-opacity:1;stroke:#ffffff;stroke-width:2.64188;stroke-linecap:round;stroke-dasharray:none;paint-order:stroke fill markers"
-     x="107.12151"
-     y="290.41937"
-     id="text1-8"
-     transform="scale(1.0635282,0.94026655)"><tspan
-       sodipodi:role="line"
-       id="tspan1-8"
-       x="107.12151"
-       y="290.41937"
-       style="font-size:44.4966px;fill:#ba5959;fill-opacity:1;stroke-width:2.64188;stroke-dasharray:none"><tspan
-         style="font-size:54.5598px;stroke-width:2.64188"
-         id="tspan2-2">A4</tspan><tspan
-         style="font-size:122.759px;stroke-width:2.64188;stroke-dasharray:none"
-         id="tspan3-4" /></tspan></text>
-  <text
-     xml:space="preserve"
-     style="font-weight:bold;font-size:977.618px;line-height:0.8;font-family:'Miriam Libre';-inkscape-font-specification:'Miriam Libre Bold';text-align:start;letter-spacing:7.33212px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#ba5959;fill-opacity:1;stroke:#ffffff;stroke-width:17.4455;stroke-linecap:round;stroke-dasharray:none;paint-order:stroke fill markers"
-     x="38.787148"
-     y="241.17586"
+     style="font-weight:bold;font-size:817.517px;line-height:0.8;font-family:'Miriam Libre';-inkscape-font-specification:'Miriam Libre Bold';text-align:start;letter-spacing:6.13136px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#ba5959;fill-opacity:1;stroke:url(#linearGradient2);stroke-width:28.889;stroke-linecap:square;stroke-dasharray:none;paint-order:stroke fill markers;stroke-linejoin:miter;stroke-dashoffset:0"
+     x="53.65237"
+     y="245.2435"
      id="text1-8-7"
      transform="scale(1.0635282,0.94026655)"><tspan
        sodipodi:role="line"
        id="tspan1-8-1"
-       x="38.787148"
-       y="241.17586"
-       style="font-size:293.83px;fill:#ba5959;fill-opacity:1;stroke-width:17.4455;stroke-dasharray:none">N</tspan></text>
+       x="53.65237"
+       y="245.2435"
+       style="font-size:245.71px;fill:#ba5959;fill-opacity:1;stroke:url(#linearGradient2);stroke-width:28.889;stroke-dasharray:none;stroke-linejoin:miter;stroke-linecap:square;paint-order:stroke fill markers;stroke-dashoffset:0">N</tspan></text>
 </svg>
