@@ -10,8 +10,8 @@ body {
 p {
     white-space: break-spaces;
     max-height: 20em;
-    overflow-x: scroll;
-    overflow-y: hidden;
+    overflow-y: scroll;
+    overflow-x: hidden;
     scrollbar-width: thin;
 }
 
