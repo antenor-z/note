@@ -157,6 +157,7 @@ function fetchNotes() {
                 // End edit element
 
                 const content = document.createElement('p')
+                content.classList.add("content")
                 content.id = `noteContent${element.id}`
                 content.innerHTML = DOMPurify.sanitize(marked.parse(element.content))
 

@@ -9,6 +9,9 @@ body {
 
 p {
     white-space: break-spaces;
+}
+
+p.content {
     max-height: 20em;
     overflow-y: scroll;
     overflow-x: hidden;
