@@ -158,7 +158,7 @@ function fetchNotes() {
 
                 const content = document.createElement('p')
                 content.id = `noteContent${element.id}`
-                content.textContent = element.content;
+                content.innerHTML = DOMPurify.sanitize(marked.parse(element.content))
 
                 // Begin Attachments section
                 const attachmentsDiv = document.createElement('div')
