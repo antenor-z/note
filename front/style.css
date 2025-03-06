@@ -4,10 +4,15 @@ body {
     font-size: 18px;
     font-family: sans-serif;
     background-image: url("/img/egg-shell.png");
+    scrollbar-width: thin;
 }
 
 p {
     white-space: break-spaces;
+    max-height: 20em;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    scrollbar-width: thin;
 }
 
 a, a:visited {
