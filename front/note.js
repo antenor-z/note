@@ -97,6 +97,11 @@ function fetchNotes() {
                 btnEdit.id = "editButtonNote" + element.id
                 btnEdit.addEventListener("click", () => editNoteToggle(element.id))
 
+                const btnCopy = document.createElement('button')
+                btnCopy.innerText = 'Copy content'
+                btnCopy.id = "copyButtonNote" + element.id
+                btnCopy.addEventListener("click", () => copyNote(element.id))
+
                 const categories = document.createElement('h3')
                 categories.textContent = `[ ${element.categories.map(cat => cat.name).join(', ')} ]`
 
@@ -152,6 +157,7 @@ function fetchNotes() {
                 // End edit element
 
                 const content = document.createElement('p')
+                content.id = `noteContent${element.id}`
                 content.textContent = element.content;
 
                 // Begin Attachments section
@@ -220,6 +226,7 @@ function fetchNotes() {
                 noteDiv.appendChild(content)
                 noteDiv.appendChild(editDiv)
                 noteDiv.appendChild(btnEdit)
+                noteDiv.appendChild(btnCopy)
                 editDiv.appendChild(uploadDiv)
                 noteDiv.appendChild(attachmentsDiv)
 
@@ -234,15 +241,23 @@ function fetchNotes() {
 function editNoteToggle(noteId) {
     const noteDiv = document.getElementById("note" + noteId)
     const noteButton = document.getElementById("editButtonNote" + noteId)
+    const noteCopyButton = document.getElementById("copyButtonNote" + noteId)
     if (noteDiv.style.display === "grid") {
         noteDiv.style.display = "none"
         noteButton.style.display = "block"
+        noteCopyButton.style.display = "block"
     }
     else {
         noteDiv.style.display = "grid"
         noteButton.style.display = "none"
+        noteCopyButton.style.display = "none"
         document.getElementById("editTitle" + noteId).focus()
     }
+}
+
+function copyNote(noteId) {
+    const noteContent = document.getElementById("noteContent" + noteId).innerText
+    navigator.clipboard.writeText(noteContent)
 }
 
 function updateNote(noteId) {
