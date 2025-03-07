@@ -245,7 +245,7 @@ function editNoteToggle(noteId) {
     const noteCopyButton = document.getElementById("copyButtonNote" + noteId)
     if (noteDiv.style.display === "grid") {
         noteDiv.style.display = "none"
-        noteButton.style.display = "block"
+        noteButton.style.display = "inline"
         noteCopyButton.style.display = "inline"
     }
     else {
