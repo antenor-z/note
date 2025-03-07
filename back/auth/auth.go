@@ -24,6 +24,7 @@ func Login(username string, password string) (string, error) {
 		token := tokenGenerator()
 		activeSessions[token] = true
 		db.InsertSession(token)
+		db.CleanSessions()
 		return token, nil
 	}
 	return "", errors.New("invalid auth")

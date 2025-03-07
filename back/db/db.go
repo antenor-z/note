@@ -28,8 +28,9 @@ type Attachment struct {
 	FileUUID string `json:"path"`
 }
 type ActiveSession struct {
-	ID    uint   `gorm:"primaryKey" json:"id"`
-	Token string `json:"token"`
+	ID        uint      `gorm:"primaryKey" json:"id"`
+	Token     string    `json:"token"`
+	CreatedAt time.Time `json:"createdAt"`
 }
 
 var db *gorm.DB
@@ -185,5 +186,15 @@ func IsSessionValid(token string) bool {
 
 func DeleteSession(token string) error {
 	result := db.Where("token = ?", token).Delete(&ActiveSession{})
+	return result.Error
+}
+
+func CleanSessions() error {
+	result := db.Where("created_at < ?", time.Now().AddDate(0, 0, -7)).Delete(&ActiveSession{})
+	if result.Error != nil {
+		return result.Error
+	}
+
+	result = db.Where("created_at IS NULL").Delete(&ActiveSession{})
 	return result.Error
 }
