@@ -58,8 +58,8 @@ button {
     font-size: 16px;
     box-shadow: #edb90c 6px 6px 0;
     min-width: 100px;
-    margin-right: 20px;
     cursor: pointer;
+    color: #000000;
 }
 
 button:hover {
@@ -148,4 +148,10 @@ textarea {
     padding: 0;
     width: 20px;
     margin-left: 10px;
+}
+
+.note {
+    button {
+        margin-right: 20px;
+    }
 }
