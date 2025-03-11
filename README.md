@@ -21,6 +21,14 @@ python3 -m http.server 3003
 
 ## Deploying
 
+- Generate the TOTP key:
+
+```
+cd totp-conf
+go build
+./main
+```
+
 - Inside note-back folder, create the following files:
 
 auth.toml:
@@ -33,6 +41,7 @@ config.toml:
 ```
 domain="http://localhost:3003"
 debugmode=true
+totp="paste the generated key"
 ```
 
 - Create empty file "db.db".
