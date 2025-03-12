@@ -10,7 +10,9 @@ with open("VERSION", "r") as fp:
 
 [major, minor, patch] = map(int, version.split("."))
 
-if "BREAKING CHANGE" in commit or re.search(r"(feat|fix)!:", commit):
+if "BREAKING CHANGE" in commit or \
+    re.search(r"feat(\([a-zA-Z0-9]+\))?!:", commit) or \
+    re.search(r"fix(\([a-zA-Z0-9]+\))?!:", commit):
     major += 1
     minor = 0
     patch = 0
