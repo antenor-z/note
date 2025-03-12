@@ -8,9 +8,10 @@ import (
 	"os"
 
 	"github.com/BurntSushi/toml"
+	"github.com/pquerna/otp/totp"
 )
 
-var authSecret Auth
+var authSecret AuthSecret
 var activeSessions = make(map[string]bool)
 
 func tokenGenerator() string {
@@ -19,8 +20,10 @@ func tokenGenerator() string {
 	return base64.StdEncoding.EncodeToString(b)
 }
 
-func Login(username string, password string) (string, error) {
-	if username == authSecret.Username && password == authSecret.Password {
+func Login(outside AuthExternal) (string, error) {
+	if outside.Username == authSecret.Username &&
+		outside.Password == authSecret.Password &&
+		totp.Validate(outside.Passcode, authSecret.Totp) {
 		token := tokenGenerator()
 		activeSessions[token] = true
 		db.InsertSession(token)
@@ -61,7 +64,14 @@ func ConfigInit() {
 	}
 }
 
-type Auth struct {
+type AuthExternal struct {
 	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
+	Passcode string `json:"passcode" binding:"required"`
+}
+
+type AuthSecret struct {
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
+	Totp     string `json:"totp" binding:"required"`
 }

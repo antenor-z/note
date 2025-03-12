@@ -37,10 +37,10 @@ func main() {
 	}))
 
 	r.POST("/api/login", login)
-	r.POST("/api/logout", logout)
 	internal := r.Group("/")
 
 	internal.Use(authMiddleware())
+	internal.POST("/api/logout", logout)
 	internal.POST("/api/note", postNote)
 	internal.PUT("/api/note/:id", putNote)
 	internal.GET("/api/note", GetAllNotes)
@@ -238,13 +238,13 @@ func deleteNote(c *gin.Context) {
 
 // curl -i -X POST -H "Content-Type: application/json" -d "{ \"username\": \"a\", \"password\": \"123\"}" localhost:5000/login
 func login(c *gin.Context) {
-	var outside auth.Auth
+	var outside auth.AuthExternal
 	err := c.ShouldBindJSON(&outside)
 	if err != nil {
 		c.JSON(400, gin.H{"error": "Invalid request"})
 		return
 	}
-	token, err := auth.Login(outside.Username, outside.Password)
+	token, err := auth.Login(outside)
 	if err != nil {
 		c.JSON(401, gin.H{"error": "Wrong credential"})
 		return

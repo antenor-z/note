@@ -34,8 +34,8 @@ func main() {
 		fmt.Println("Failed to verify TOTP")
 		os.Exit(1)
 	}
-	fmt.Println("Add to config.toml:")
-	fmt.Printf("totp=%s\n", key.Secret())
+	fmt.Println("Add to auth.toml:")
+	fmt.Printf("totp=\"%s\"\n", key.Secret())
 }
 
 func display(data string) {
