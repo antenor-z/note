@@ -155,3 +155,7 @@ textarea {
         margin-right: 20px;
     }
 }
+
+#version {
+    opacity: 0.25;
+}

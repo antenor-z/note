@@ -37,6 +37,7 @@ func main() {
 	}))
 
 	r.POST("/api/login", login)
+	r.GET("/api/version", version)
 	internal := r.Group("/")
 
 	internal.Use(authMiddleware())
@@ -53,6 +54,10 @@ func main() {
 	internal.GET("/api/note/:id/attachment/:attachmentId/file", getAttachmentFile)
 	r.Run(":5003")
 
+}
+
+func version(c *gin.Context) {
+	c.JSON(200, gin.H{"version": noteConfig.GetVersion()})
 }
 
 func postAttachment(c *gin.Context) {

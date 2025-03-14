@@ -31,3 +31,15 @@ type Config struct {
 	Domain    string
 	DebugMode bool
 }
+
+func GetVersion() string {
+	dat, err := os.ReadFile("VERSION")
+	if err != nil {
+		dat, err := os.ReadFile("../VERSION")
+		if err != nil {
+			panic("Error while reading version file")
+		}
+		return string(dat)
+	}
+	return string(dat)
+}
