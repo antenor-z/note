@@ -279,6 +279,7 @@ function updateNote(noteId) {
         .catch(error => {
             console.error('Error fetching:', error);
         });
+    window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
 function sendNote() {
@@ -300,6 +301,7 @@ function sendNote() {
         .catch(error => {
             console.error('Error fetching:', error)
         })
+    window.scrollTo({top: 0, behavior: 'smooth'});
 }
 function sendNote() {
     const noteTitle = document.getElementById("noteTitle").value
@@ -334,6 +336,7 @@ function deleteNote(noteId) {
         .catch(error => {
             console.error('Error fetching:', error)
         })
+    window.scrollTo({top: 0, behavior: 'smooth'});
 }
 function deleteAttachment(noteId, attachmentId) {
     if (!confirm('Are you sure you want to delete this attachment?')) return
