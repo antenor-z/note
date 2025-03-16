@@ -19,7 +19,7 @@ function try_login() {
             fetchNotes()
         })
 }
-try_login()
+setInterval(try_login, 3000);
 function fetchCategories() {
     const container = document.getElementById('categories-container')
     const categoryMap = {}
