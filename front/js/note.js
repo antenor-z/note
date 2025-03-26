@@ -62,6 +62,8 @@ function fetchCategories() {
 
 function fetchNotes() {
     fetchCategories()
+    document.getElementById("search").value = ""
+
     const catList = []
     for (var child = document.getElementById("categories-container").firstChild; child !== null; child = child.nextSibling) {
         const div = child

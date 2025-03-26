@@ -19,6 +19,7 @@
     <!-- begin add note --> 
     <button onclick="toggleAddNote()" style="margin-right: 15px;">Add note</button>
     <button onclick="logout()">Logout</button>
+    <input id="search" style="margin-left: 20px;" type="text">
     <div id="addNote" class="grid box">
       <label for="noteTitle">Title</label>
       <input id="noteTitle" type="textbox" required>
@@ -38,13 +39,32 @@
     </div>
     <span id="version"></span>
   </content>
-  <script src="3p/marked.min.js"></script>
-  <script src="3p/purify.min.js"></script>
-  <script src="config.js"></script>
-  <script src="note.js"></script>
-  <script src="logout.js"></script>
-  <script src="version.js"></script>
+  <script src="js/3p/marked.min.js"></script>
+  <script src="js/3p/purify.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/note.js"></script>
+  <script src="js/logout.js"></script>
+  <script src="js/version.js"></script>
+  <script>
+    document.getElementById("search").addEventListener("input", function () { search(this) })
+
+    function search(inputElement) {
+      const searchText = inputElement.value.toLowerCase();
+      const notes = document.getElementById("notes-container").children
+      for (let i = 0; i < notes.length; i += 1) {
+        const note = notes[i]
+        const noteTitle = note.children[0].innerText.toLowerCase()
+        const noteContent = note.children[3].innerHTML.toLowerCase()
+        if (noteTitle.includes(searchText) || noteContent.includes(searchText)) {
+          note.style.display = "block"
+        }
+        else {
+          note.style.display = "none"
+        }
+      }
+    }
   </script>
+
 </body>
 
 </html>
