@@ -91,6 +91,9 @@ function fetchNotes() {
                 noteDiv.classList.add('note')
                 noteDiv.classList.add('box')
 
+                const innerNoteDiv = document.createElement('div')
+                innerNoteDiv.id = "innerNote" + element.id
+
                 const title = document.createElement('h2')
                 title.textContent = element.title
 
@@ -100,7 +103,7 @@ function fetchNotes() {
                 btnEdit.addEventListener("click", () => editNoteToggle(element.id))
 
                 const btnCopy = document.createElement('button')
-                btnCopy.innerText = 'Copy content'
+                btnCopy.innerText = 'Copy'
                 btnCopy.id = "copyButtonNote" + element.id
                 btnCopy.addEventListener("click", () => copyNote(element.id))
 
@@ -139,6 +142,7 @@ function fetchNotes() {
 
                 // Begin edit.action buttons
                 const editActionContainer = document.createElement('div')
+                editActionContainer.classList.add('edit-action-container')
                 const btnUpdate = document.createElement('button')
                 btnUpdate.innerText = 'Update'
                 btnUpdate.addEventListener("click", () => updateNote(element.id))
@@ -155,7 +159,6 @@ function fetchNotes() {
                 editDiv.appendChild(editTitle)
                 editDiv.appendChild(editContent)
                 editDiv.appendChild(editCategories)
-                editDiv.appendChild(editActionContainer)
                 // End edit element
 
                 const content = document.createElement('p')
@@ -223,15 +226,17 @@ function fetchNotes() {
                 uploadDiv.appendChild(uploadBtn)
                 // End Upload section
 
-                noteDiv.appendChild(title)
-                noteDiv.appendChild(categories)
-                noteDiv.appendChild(createdAt)
-                noteDiv.appendChild(content)
+                innerNoteDiv.appendChild(title)
+                innerNoteDiv.appendChild(categories)
+                innerNoteDiv.appendChild(createdAt)
+                innerNoteDiv.appendChild(content)
                 noteDiv.appendChild(editDiv)
-                noteDiv.appendChild(btnEdit)
-                noteDiv.appendChild(btnCopy)
+                innerNoteDiv.appendChild(btnEdit)
+                innerNoteDiv.appendChild(btnCopy)
+                noteDiv.appendChild(innerNoteDiv)
                 editDiv.appendChild(uploadDiv)
                 noteDiv.appendChild(attachmentsDiv)
+                editDiv.appendChild(editActionContainer)
 
                 container.appendChild(noteDiv)
             })
@@ -245,15 +250,18 @@ function editNoteToggle(noteId) {
     const noteDiv = document.getElementById("note" + noteId)
     const noteButton = document.getElementById("editButtonNote" + noteId)
     const noteCopyButton = document.getElementById("copyButtonNote" + noteId)
+    const innerNote = document.getElementById("innerNote" + noteId)
     if (noteDiv.style.display === "grid") {
         noteDiv.style.display = "none"
         noteButton.style.display = "inline"
         noteCopyButton.style.display = "inline"
+        innerNote.style.display = "unset"
     }
     else {
         noteDiv.style.display = "grid"
         noteButton.style.display = "none"
         noteCopyButton.style.display = "none"
+        innerNote.style.display = "none"
         document.getElementById("editTitle" + noteId).focus()
     }
 }

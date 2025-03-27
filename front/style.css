@@ -27,9 +27,9 @@ content {
 
 #categories-container {
     display: flex;
-    background-color: #1100aa;
+    background-color: #525252ad;
     overflow-x: scroll;
-    padding: 21px;
+    border: 0;
 }
 
 h2 {
@@ -43,29 +43,26 @@ h3 {
 }
 
 h4 {
-    color: #aaa;
+    color: #5a5a5a;
     font-size: 10px;
-    font-style: italic;
-    margin: 10px 0;
     text-align: right;
 }
 
 button {
-    background-color: #aaa;
+    background-color: #aaaaaa00;
     padding: 7px 15px;
     margin-bottom: 10px;
-    border: 0;
+    border: #777 2px solid;
     font-size: 16px;
-    box-shadow: #edb90c 6px 6px 0;
     min-width: 100px;
     cursor: pointer;
-    color: #000000;
+    color: #bcbcbc;
+    border-radius: 5px;
 }
 
 button:hover {
     color: #fff;
     background-color: #777;
-    box-shadow: #edb90c 0px 0px 0;
 }
 
 input[type="checkbox"] {
@@ -73,19 +70,26 @@ input[type="checkbox"] {
 }
 
 input[type="file"] {
-    background-color: #000;
+    background-color: #00000050;
+    width: 100%;
+    cursor: pointer;
 }
+input[type=file]::file-selector-button {
+    display: none;
+}
+  
 
 .upload-section {
-    margin-top: 20px;
+    display: flex;
     button {
-        margin-left: 20px;
+        margin-right: 0 !important;
+        margin-left: 10px;
     }
 }
 
 .checkbox-label {
     background-color: #444;
-    box-shadow: #000 6px 6px 0;
+    border: #777 2px solid;
     margin-right: 15px;
     padding: 5px 20px;
 }
@@ -96,34 +100,39 @@ input[type="file"] {
     cursor: pointer;
 }
 input[type="checkbox"]:checked + .checkbox-label {
-    background-color: rgb(128, 0, 0);
+    background-color: #943232;
+    border: #d14646 2px solid;
     color: white;
     font-weight: bold;
 }
 
 input {
-    background-color: #fff;
+    background-color: #252525;
+    color: #ddd;
     padding: 10px 15px;
     border: 0;
     margin-bottom: 10px;
     font-size: 16px;
     outline: none;
-    box-sizing: border-box;
+    border: solid #edb80c00 3px;
+    border-radius: 10px;
 }
 
 input:focus,textarea:focus {
-    border: solid #edb90c 3px;
+    border: solid #edb80cae 3px;
 }
 
 textarea {
-    background-color: #ffffff;
+    background-color: #252525;
+    color: #ddd;
     padding: 10px 15px;
     border: 0;
     margin-bottom: 10px;
     height: 130px;
     font-size: 16px;
     outline: none;
-    box-sizing: border-box;
+    border: solid #edb80c00 3px;
+    border-radius: 10px;
 }
 
 .grid {
@@ -132,11 +141,10 @@ textarea {
 
 .box {
     background-color: #333;
-    margin-top: 15px;
     padding: 20px;
-    margin: 20px 10px 20px 0;
-    box-shadow: #000 10px 10px 0;
-    background-image: url("/img/egg-shell.png");
+    margin: 20px 0;
+    border-radius: 15px;
+    border: #ffffff2a 2px solid;
 }
 
 #authfail {
@@ -152,8 +160,25 @@ textarea {
 
 .note {
     button {
-        margin-right: 20px;
+        margin-right: 10px;
+        height: 40px;
     }
+}
+
+.control-bar {
+    display: flex;
+    justify-content: start;
+    input {
+        width: 100%;
+    }
+    button {
+        min-width: 80px;
+    }
+}
+
+.edit-action-container {
+    display: flex;
+    margin: 20px 5px;
 }
 
 #version {
