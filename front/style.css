@@ -156,6 +156,7 @@ textarea {
     padding: 0;
     width: 20px;
     margin-left: 10px;
+    min-width: 40px;
 }
 
 .note {
