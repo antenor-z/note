@@ -5,14 +5,19 @@ import (
 	"encoding/base64"
 	"errors"
 	"note/db"
-	"os"
+	"note/noteConfig"
 
-	"github.com/BurntSushi/toml"
 	"github.com/pquerna/otp/totp"
 )
 
-var authSecret AuthSecret
+var authSecret noteConfig.Auth = noteConfig.GetAuthSecret()
 var activeSessions = make(map[string]bool)
+
+type AuthExternal struct {
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
+	Passcode string `json:"passcode" binding:"required"`
+}
 
 func tokenGenerator() string {
 	b := make([]byte, 128)
@@ -21,9 +26,9 @@ func tokenGenerator() string {
 }
 
 func Login(outside AuthExternal) (string, error) {
-	if outside.Username == authSecret.Username &&
-		outside.Password == authSecret.Password &&
-		totp.Validate(outside.Passcode, authSecret.Totp) {
+	if outside.Username == noteConfig.GetAuthSecret().Username &&
+		outside.Password == noteConfig.GetAuthSecret().Password &&
+		totp.Validate(outside.Passcode, noteConfig.GetAuthSecret().Totp) {
 		token := tokenGenerator()
 		activeSessions[token] = true
 		db.InsertSession(token)
@@ -51,27 +56,4 @@ func Validate(token string) bool {
 		return true
 	}
 	return false
-}
-
-func ConfigInit() {
-	dat, err := os.ReadFile("auth.toml")
-	if err != nil {
-		panic("Error while opening config file")
-	}
-	_, err2 := toml.Decode(string(dat), &authSecret)
-	if err2 != nil {
-		panic("Error while reading toml")
-	}
-}
-
-type AuthExternal struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
-	Passcode string `json:"passcode" binding:"required"`
-}
-
-type AuthSecret struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
-	Totp     string `json:"totp" binding:"required"`
 }

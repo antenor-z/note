@@ -17,7 +17,6 @@ import (
 
 func main() {
 	db.Init()
-	auth.ConfigInit()
 	noteConfig.ConfigInit()
 
 	if noteConfig.IsDebug() {

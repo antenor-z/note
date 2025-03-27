@@ -6,6 +6,21 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
+type Auth struct {
+	Username string `toml:"username"`
+	Password string `toml:"password"`
+	Totp     string `toml:"totp"`
+}
+
+type Server struct {
+	Domain    string `toml:"domain"`
+	DebugMode bool   `toml:"debugmode"`
+}
+type Config struct {
+	Server Server
+	Auth   Auth
+}
+
 var config Config
 
 func ConfigInit() {
@@ -20,16 +35,15 @@ func ConfigInit() {
 }
 
 func GetDomain() string {
-	return config.Domain
+	return config.Server.Domain
 }
 
 func IsDebug() bool {
-	return config.DebugMode
+	return config.Server.DebugMode
 }
 
-type Config struct {
-	Domain    string
-	DebugMode bool
+func GetAuthSecret() Auth {
+	return config.Auth
 }
 
 func GetVersion() string {
