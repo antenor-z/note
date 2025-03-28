@@ -39,7 +39,7 @@ func Init() {
 	var err error
 	db, err = gorm.Open(sqlite.Open("db.db"), &gorm.Config{})
 	if err != nil {
-		panic("failed to connect database")
+		panic("Init(): " + err.Error())
 	}
 
 	db.AutoMigrate(&Note{}, &Attachment{}, &ActiveSession{})

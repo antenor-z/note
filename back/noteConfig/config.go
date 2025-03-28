@@ -26,11 +26,11 @@ var config Config
 func ConfigInit() {
 	dat, err := os.ReadFile("config.toml")
 	if err != nil {
-		panic("Error while opening config file")
+		panic("ConfigInit(): " + err.Error())
 	}
 	_, err2 := toml.Decode(string(dat), &config)
 	if err2 != nil {
-		panic("Error while reading toml")
+		panic("ConfigInit(): " + err2.Error())
 	}
 }
 
@@ -51,7 +51,7 @@ func GetVersion() string {
 	if err != nil {
 		dat, err := os.ReadFile("../VERSION")
 		if err != nil {
-			panic("Error while reading version file")
+			panic("GetVersion(): " + err.Error())
 		}
 		return string(dat)
 	}
