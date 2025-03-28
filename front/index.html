@@ -55,8 +55,9 @@
       const notes = document.getElementById("notes-container").children
       for (let i = 0; i < notes.length; i += 1) {
         const note = notes[i]
-        const noteTitle = note.children[0].innerText.toLowerCase()
-        const noteContent = note.children[3].innerHTML.toLowerCase()
+        const noteInner = note.children[1]
+        const noteTitle = noteInner.children[0].innerText.toLowerCase()
+        const noteContent = noteInner.children[3].innerHTML.toLowerCase()
         if (noteTitle.includes(searchText) || noteContent.includes(searchText)) {
           note.style.display = "block"
         }
