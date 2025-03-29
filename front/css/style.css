@@ -1,5 +1,5 @@
 body {
-    background-color: #444;
+    background-color: #33333b;
     color: #eee;
     font-size: 18px;
     font-family: sans-serif;
@@ -27,7 +27,7 @@ content {
 
 #categories-container {
     display: block ruby;
-    background-color: #525252ad;
+    background-color: #a1a1a121;
     overflow-x: scroll;
     border: 0;
     * {
@@ -132,7 +132,7 @@ textarea {
 }
 
 .box {
-    background-color: #333;
+    background-color: #222230;;
     padding: 20px;
     margin: 20px 0;
     border-radius: 15px;
