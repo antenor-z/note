@@ -7,6 +7,7 @@ COPY *.css /usr/share/nginx/html
 COPY *.js /usr/share/nginx/html
 COPY js/3p/*.js /usr/share/nginx/html/js/3p/
 COPY js/*.js /usr/share/nginx/html/js/
+COPY css/*.css /usr/share/nginx/html/css/
 COPY img /usr/share/nginx/html/img
 COPY favicon /usr/share/nginx/html/favicon
 

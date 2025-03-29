@@ -30,6 +30,26 @@ content {
     background-color: #525252ad;
     overflow-x: scroll;
     border: 0;
+    * {
+        margin-right: 10px;
+    }
+    .checkbox-label {
+        background-color: #444;
+        border: #777 2px solid;
+        padding: 5px 20px;
+    }
+    .checkbox-label:hover {
+        color: #fff;
+        background-color: #777;
+        cursor: pointer;
+    }
+    input[type="checkbox"] {
+        display: none;
+    }
+    input[type="checkbox"]:checked + .checkbox-label {
+        background-color: #943232;
+        border: #d14646 2px solid;
+    }
 }
 
 h2 {
@@ -49,12 +69,10 @@ h4 {
 }
 
 button {
-    background-color: #aaaaaa00;
-    padding: 7px 15px;
-    margin-bottom: 10px;
+    background-color: #00000000;
+    padding: 7px 10px;
     border: #777 2px solid;
     font-size: 16px;
-    min-width: 100px;
     cursor: pointer;
     color: #bcbcbc;
     border-radius: 5px;
@@ -65,52 +83,26 @@ button:hover {
     background-color: #777;
 }
 
-input[type="checkbox"] {
-    display: none;
-}
-
-input[type="file"] {
-    background-color: #00000050;
-    width: 100%;
-    cursor: pointer;
-}
-input[type=file]::file-selector-button {
-    display: none;
-}
-  
-
 .upload-section {
     display: flex;
+    align-items: baseline;
     button {
-        margin-right: 0 !important;
-        margin-left: 10px;
+        margin: 0 0 0 10px !important;
     }
-}
-
-.checkbox-label {
-    background-color: #444;
-    border: #777 2px solid;
-    margin-right: 15px;
-    padding: 5px 20px;
-}
-.checkbox-label:hover {
-    box-shadow: #000 0px 0px 0;
-    color: #fff;
-    background-color: #777;
-    cursor: pointer;
-}
-input[type="checkbox"]:checked + .checkbox-label {
-    background-color: #943232;
-    border: #d14646 2px solid;
-    color: white;
-    font-weight: bold;
+    input[type="file"] {
+        background-color: #00000050;
+        width: 100%;
+        cursor: pointer;
+    }
+    input[type=file]::file-selector-button {
+        display: none;
+    }
 }
 
 input {
     background-color: #252525;
     color: #ddd;
     padding: 10px 15px;
-    border: 0;
     margin-bottom: 10px;
     font-size: 16px;
     outline: none;
@@ -147,33 +139,35 @@ textarea {
     border: #ffffff2a 2px solid;
 }
 
-#authfail {
-    font-family: monospace;
-    display: none;
-}
-
 .delete-attachment {
     padding: 0;
-    width: 20px;
-    margin-left: 10px;
-    min-width: 40px;
+    width: 30px;
+    height: 30px;
+    background-color: #d14646;
+    border: 0;
+    border-radius: 30px;
+    color: #fff;
+    margin: 5px;
+    padding: 0 !important;
 }
 
 .note {
     button {
         margin-right: 10px;
-        height: 40px;
+        padding: 10px 20px;
     }
 }
 
 .control-bar {
     display: flex;
     justify-content: start;
+    align-items: baseline;
     input {
         width: 100%;
     }
     button {
         min-width: 80px;
+        padding: 12px 0;
     }
 }
 
@@ -184,4 +178,9 @@ textarea {
 
 #version {
     opacity: 0.25;
+}
+
+#authfail {
+    font-family: monospace;
+    display: none;
 }
