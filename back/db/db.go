@@ -180,8 +180,12 @@ func InsertSession(token string) error {
 }
 
 func IsSessionValid(token string) bool {
-	result := db.Where("token = ?", token).Find(&ActiveSession{})
-	return result.Error == nil
+	var activeSession ActiveSession
+	result := db.Where("token = ?", token).Find(&activeSession)
+	if result.Error != nil {
+		return false
+	}
+	return activeSession.Token == token
 }
 
 func DeleteSession(token string) error {
