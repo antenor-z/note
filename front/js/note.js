@@ -251,11 +251,17 @@ function editNoteToggle(noteId) {
     const noteButton = document.getElementById("editButtonNote" + noteId)
     const noteCopyButton = document.getElementById("copyButtonNote" + noteId)
     const innerNote = document.getElementById("innerNote" + noteId)
+    const elements = document.querySelectorAll('.delete-attachment')
+    console.log(elements)
+
     if (noteDiv.style.display === "grid") {
         noteDiv.style.display = "none"
         noteButton.style.display = "inline"
         noteCopyButton.style.display = "inline"
         innerNote.style.display = "unset"
+        elements.forEach(element => {
+            element.style.display = 'none'
+        })
     }
     else {
         noteDiv.style.display = "grid"
@@ -263,6 +269,9 @@ function editNoteToggle(noteId) {
         noteCopyButton.style.display = "none"
         innerNote.style.display = "none"
         document.getElementById("editTitle" + noteId).focus()
+        elements.forEach(element => {
+            element.style.display = 'unset'
+        })
     }
 }
 
