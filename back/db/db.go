@@ -194,7 +194,7 @@ func DeleteSession(token string) error {
 }
 
 func CleanSessions() error {
-	result := db.Where("created_at < ?", time.Now().AddDate(0, 0, -7)).Delete(&ActiveSession{})
+	result := db.Where("created_at < ?", time.Now().AddDate(0, 0, -15)).Delete(&ActiveSession{})
 	if result.Error != nil {
 		return result.Error
 	}
