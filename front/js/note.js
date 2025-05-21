@@ -192,6 +192,15 @@ function updateNote(noteId) {
     const editContent = document.getElementById("editContent" + noteId).value;
     const editCategories = document.getElementById("editCategories" + noteId).value.split(",");
 
+    const input = document.getElementById(`fileInput${noteId}`)
+    const noteEdit = document.getElementById(`note${noteId}`)
+    const loading = document.createElement("div")
+    loading.innerHTML = `<img style='width: 20px; opacity: 50%' src='/img/spinner.gif'> Loading...`
+    noteEdit.appendChild(loading)
+    if (input.files.length > 0) {
+        uploadFile(noteId, input.files[0])
+    }
+
     fetch(`${window.API_URL}/note/${noteId}`, {
         method: "PUT",
         body: JSON.stringify({ title: editTitle, content: editContent, categories: editCategories }),
@@ -205,6 +214,7 @@ function updateNote(noteId) {
         .catch(error => {
             console.error('Error fetching:', error);
         });
+    loading.remove()
     window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
