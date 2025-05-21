@@ -2,6 +2,8 @@ package routes
 
 import (
 	"note/db"
+	"os"
+	"path"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -83,6 +85,15 @@ func DeleteNote(c *gin.Context) {
 		c.JSON(400, gin.H{"error": "Invalid request"})
 		return
 	}
+	attachments, err := db.GetAttachments(uint(noteId))
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Couldn't get attachments"})
+		return
+	}
+	for _, attachment := range attachments {
+		os.Remove(path.Join("uploads", attachment.FileUUID))
+	}
+	db.DeleteAllAttachments(uint(noteId))
 	db.DeleteNote(noteId)
 	c.JSON(200, gin.H{"status": "ok"})
 }

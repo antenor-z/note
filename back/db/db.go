@@ -80,6 +80,17 @@ func GetAttachment(noteId uint, attachmentId int) (Attachment, error) {
 	return attachment, err
 }
 
+func GetAttachments(noteId uint) ([]Attachment, error) {
+	var attachments []Attachment
+	err := db.Where("note_id = ?", noteId).Find(&attachments).Error
+	return attachments, err
+}
+
+func DeleteAllAttachments(noteId uint) error {
+	result := db.Where("note_id = ?", noteId).Delete(&Attachment{})
+	return result.Error
+}
+
 func GetAllNotes() ([]Note, error) {
 	var notes []Note
 	err := db.Model(&Note{}).
