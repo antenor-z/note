@@ -115,8 +115,6 @@ function fetchNotes() {
                         <input value="${editCategories}" id="editCategories${element.id}">
                         <div class="upload-section">
                             <input type="file" id="fileInput${element.id}">
-                            <button onclick="const input=document.getElementById('fileInput${element.id}'); 
-                                input.files.length && uploadFile(${element.id}, input.files[0])">Upload</button>
                         </div>
                         <div class="edit-action-container">
                             <button onclick="updateNote(${element.id})">Update</button>
