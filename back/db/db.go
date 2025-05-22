@@ -192,7 +192,7 @@ func InsertSession(token string) error {
 
 func IsSessionValid(token string) bool {
 	var activeSession ActiveSession
-	result := db.Where("token = ?", token).Find(&activeSession)
+	result := db.Where("token = ?", token).First(&activeSession)
 	if result.Error != nil {
 		return false
 	}

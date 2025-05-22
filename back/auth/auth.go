@@ -6,12 +6,56 @@ import (
 	"errors"
 	"note/db"
 	"note/noteConfig"
+	"sync"
+	"time"
 
 	"github.com/pquerna/otp/totp"
 )
 
 var authSecret noteConfig.Auth = noteConfig.GetAuthSecret()
-var activeSessions = make(map[string]bool)
+
+type safeSession struct {
+	active map[string]bool
+	mutex  sync.RWMutex
+}
+
+func (s *safeSession) add(token string) {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	s.active[token] = true
+}
+
+func (s *safeSession) exists(token string) bool {
+	s.mutex.RLock()
+	defer s.mutex.RUnlock()
+	return s.active[token]
+}
+
+func (s *safeSession) remove(token string) {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	delete(s.active, token)
+}
+
+var sessionsCache safeSession = safeSession{active: make(map[string]bool)}
+
+func cachePurge() {
+	timer := time.NewTicker(time.Hour * 1)
+	defer timer.Stop()
+	for {
+		select {
+		case <-timer.C:
+			go func() {
+				sessionsCache.mutex.Lock()
+				defer sessionsCache.mutex.Unlock()
+				clear(sessionsCache.active)
+			}()
+		}
+	}
+}
+func init() {
+	go cachePurge()
+}
 
 type AuthExternal struct {
 	Username string `json:"username" binding:"required"`
@@ -30,7 +74,7 @@ func Login(outside AuthExternal) (string, error) {
 		outside.Password == noteConfig.GetAuthSecret().Password &&
 		totp.Validate(outside.Passcode, noteConfig.GetAuthSecret().Totp) {
 		token := tokenGenerator()
-		activeSessions[token] = true
+		sessionsCache.add(token)
 		db.InsertSession(token)
 		db.CleanSessions()
 		return token, nil
@@ -39,8 +83,8 @@ func Login(outside AuthExternal) (string, error) {
 }
 
 func Logout(token string) (string, error) {
-	if activeSessions[token] {
-		delete(activeSessions, token)
+	if sessionsCache.exists(token) {
+		sessionsCache.remove(token)
 		db.DeleteSession(token)
 		return "logged out", nil
 	}
@@ -48,11 +92,11 @@ func Logout(token string) (string, error) {
 }
 
 func Validate(token string) bool {
-	if activeSessions[token] {
+	if sessionsCache.exists(token) {
 		return true
 	}
 	if db.IsSessionValid(token) {
-		activeSessions[token] = true
+		sessionsCache.add(token)
 		return true
 	}
 	return false

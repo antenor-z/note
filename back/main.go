@@ -24,8 +24,8 @@ func main() {
 	r.MaxMultipartMemory = 256 << 20 // 256MB file max
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{noteConfig.GetDomain()},
-		AllowMethods:     []string{"PUT", "POST", "DELETE"},
-		AllowHeaders:     []string{"Origin"},
+		AllowMethods:     []string{"GET", "PUT", "POST", "DELETE"},
+		AllowHeaders:     []string{"Origin", "Content-Type"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
