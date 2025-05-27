@@ -30,7 +30,10 @@
       <textarea id="noteContent"></textarea>
       <label for="noteCategories">Categories (comma separated)</label>
       <input id="noteCategories" type="textbox">
-      <button onclick="sendNote()">Add</button>
+      <div class="edit-action-container">
+        <button onclick="sendNote()">Add</button>
+        <button onclick="toggleAddNote()">Cancel</button>
+      </div>
     </div>
     <!-- end add note -->
 
