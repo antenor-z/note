@@ -11,6 +11,7 @@ import (
 )
 
 func PostAttachment(c *gin.Context) {
+	userId := c.GetUint("userId")
 	noteIdParam := c.Param("id")
 	noteId, err := strconv.Atoi(noteIdParam)
 	if err != nil {
@@ -26,7 +27,7 @@ func PostAttachment(c *gin.Context) {
 
 	name := file.Filename
 	internalName := uuid.New().String()
-	err = db.InsertAttachment(uint(noteId), name, internalName)
+	err = db.InsertAttachment(uint(noteId), name, internalName, userId)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to insert attachment"})
 		return
@@ -42,6 +43,7 @@ func PostAttachment(c *gin.Context) {
 }
 
 func GetAttachmentFile(c *gin.Context) {
+	userId := c.GetUint("userId")
 	noteIdParam := c.Param("id")
 	noteId, err := strconv.Atoi(noteIdParam)
 	if err != nil {
@@ -56,7 +58,7 @@ func GetAttachmentFile(c *gin.Context) {
 		return
 	}
 
-	attachment, err := db.GetAttachment(uint(noteId), attachmentId)
+	attachment, err := db.GetAttachment(uint(noteId), attachmentId, userId)
 	if err != nil {
 		c.JSON(404, gin.H{"error": "Attachment not found"})
 		return
@@ -67,6 +69,7 @@ func GetAttachmentFile(c *gin.Context) {
 }
 
 func DeleteAttachment(c *gin.Context) {
+	userId := c.GetUint("userId")
 	noteIdParam := c.Param("id")
 	noteId, err := strconv.Atoi(noteIdParam)
 	if err != nil {
@@ -81,13 +84,13 @@ func DeleteAttachment(c *gin.Context) {
 		return
 	}
 
-	attachment, err := db.GetAttachment(uint(noteId), attachmentId)
+	attachment, err := db.GetAttachment(uint(noteId), attachmentId, userId)
 	if err != nil {
 		c.JSON(404, gin.H{"error": "Attachment not found"})
 		return
 	}
 
-	err = db.DeleteAttachment(uint(noteId), attachmentId)
+	err = db.DeleteAttachment(uint(noteId), attachmentId, userId)
 	if err != nil {
 		c.JSON(400, gin.H{"error": "Failed to delete attachment"})
 		return

@@ -3,35 +3,10 @@ package db
 import (
 	"time"
 
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
-
-type Category struct {
-	ID    uint    `gorm:"primaryKey" json:"id"`
-	Name  string  `json:"name"`
-	Notes []*Note `gorm:"many2many:note_categories;" json:"notes"`
-}
-type Note struct {
-	ID          uint         `gorm:"primaryKey" json:"id"`
-	CreatedAt   time.Time    `json:"createdAt"`
-	UpdatedAt   time.Time    `json:"updatedAt"`
-	Title       string       `json:"title"`
-	Content     string       `json:"content"`
-	Categories  []*Category  `gorm:"many2many:note_categories;" json:"categories"`
-	Attachments []Attachment `json:"attachments"`
-}
-type Attachment struct {
-	ID       uint   `gorm:"primaryKey" json:"id"`
-	NoteID   uint   `json:"noteId"`
-	Name     string `json:"name"`
-	FileUUID string `json:"path"`
-}
-type ActiveSession struct {
-	ID        uint      `gorm:"primaryKey" json:"id"`
-	Token     string    `json:"token"`
-	CreatedAt time.Time `json:"createdAt"`
-}
 
 var db *gorm.DB
 
@@ -45,7 +20,31 @@ func Init() {
 	db.AutoMigrate(&Note{}, &Attachment{}, &ActiveSession{})
 }
 
-func InsertNote(title string, content string, categoryNames []string) error {
+func CreateUser(username string, password string, totp string) error {
+	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(password), 12)
+	result := db.Create(&User{Username: username, Password: string(hashedPassword), Totp: totp})
+	return result.Error
+}
+
+func EditUser(username string, password string, totp string) error {
+	var user User
+	result := db.Where("username = ?", username).First(&user)
+	if password != "" {
+		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(password), 12)
+		user.Password = string(hashedPassword)
+	}
+	if totp != "" {
+		user.Totp = totp
+	}
+	return result.Error
+}
+
+func DeleteUser(username string) error {
+	result := db.Where("username = ?", username).Delete(&User{})
+	return result.Error
+}
+
+func InsertNote(title string, content string, categoryNames []string, userId uint) error {
 	var categories []*Category
 
 	if len(categoryNames) == 1 && categoryNames[0] == "" {
@@ -53,57 +52,62 @@ func InsertNote(title string, content string, categoryNames []string) error {
 	}
 
 	for _, name := range categoryNames {
-		c := Category{Name: name}
-		db.FirstOrCreate(&c, Category{Name: name})
+		c := Category{Name: name, UserID: userId}
+		db.FirstOrCreate(&c, Category{Name: name, UserID: userId})
 		categories = append(categories, &c)
 	}
 
-	note := Note{Title: title, Content: content, Categories: categories}
+	note := Note{Title: title, Content: content, Categories: categories, UserID: userId}
 	result := db.Create(&note)
 	return result.Error
 }
 
-func InsertAttachment(noteId uint, name string, fileUUID string) error {
-	attachment := Attachment{NoteID: noteId, Name: name, FileUUID: fileUUID}
+func InsertAttachment(noteId uint, name string, fileUUID string, userId uint) error {
+	attachment := Attachment{NoteID: noteId, Name: name, FileUUID: fileUUID, UserID: userId}
 	result := db.Create(&attachment)
 	return result.Error
 }
 
-func DeleteAttachment(noteId uint, attachmentId int) error {
-	result := db.Where("note_id = ?", noteId).Delete(&Attachment{}, attachmentId)
+func DeleteAttachment(noteId uint, attachmentId int, userId uint) error {
+	result := db.Where("note_id = ? AND user_id = ?", noteId, userId).
+		Delete(&Attachment{}, attachmentId)
 	return result.Error
 }
 
-func GetAttachment(noteId uint, attachmentId int) (Attachment, error) {
+func GetAttachment(noteId uint, attachmentId int, userId uint) (Attachment, error) {
 	var attachment Attachment
-	err := db.Where("id = ? AND note_id = ?", attachmentId, noteId).First(&attachment).Error
+	err := db.Where("id = ? AND note_id = ? AND user_id", attachmentId, noteId, userId).
+		First(&attachment).Error
 	return attachment, err
 }
 
-func GetAttachments(noteId uint) ([]Attachment, error) {
+func GetAttachments(noteId uint, userId uint) ([]Attachment, error) {
 	var attachments []Attachment
-	err := db.Where("note_id = ?", noteId).Find(&attachments).Error
+	err := db.Where("note_id = ? AND user_id = ?", noteId, userId).
+		Find(&attachments).Error
 	return attachments, err
 }
 
-func DeleteAllAttachments(noteId uint) error {
-	result := db.Where("note_id = ?", noteId).Delete(&Attachment{})
+func DeleteAllAttachments(noteId uint, userId uint) error {
+	result := db.Where("note_id = ? AND user_id = ?", noteId, userId).
+		Delete(&Attachment{})
 	return result.Error
 }
 
-func GetAllNotes() ([]Note, error) {
+func GetAllNotes(userId uint) ([]Note, error) {
 	var notes []Note
 	err := db.Model(&Note{}).
 		Order("notes.updated_at DESC").
 		Preload("Categories").
 		Preload("Attachments").
+		Where("user_id = ?", userId).
 		Find(&notes).Error
 	return notes, err
 }
 
-func GetAllCategories() ([]string, error) {
+func GetAllCategories(userId uint) ([]string, error) {
 	var categories []Category
-	res := db.Find(&categories)
+	res := db.Where("user_id = ?", userId).Find(&categories)
 	var categoryList []string
 	for _, category := range categories {
 		categoryList = append(categoryList, category.Name)
@@ -111,23 +115,27 @@ func GetAllCategories() ([]string, error) {
 	return categoryList, res.Error
 }
 
-func DeleteNote(noteId int) error {
+func DeleteNote(noteId int, userId uint) error {
 	var note Note
-	if err := db.Preload("Categories").First(&note, noteId).Error; err != nil {
+	if err := db.Preload("Categories").
+		Where("user_id = ?", userId).
+		First(&note, noteId).Error; err != nil {
 		return err
 	}
 
-	result := db.Exec("DELETE FROM notes WHERE id=?", noteId)
+	result := db.Exec("DELETE FROM notes WHERE id=? AND user_id = ?", noteId, userId)
 	if result.Error != nil {
 		return result.Error
 	}
 
-	db.Exec("DELETE FROM note_categories WHERE note_id=?", noteId)
+	db.Exec("DELETE FROM note_categories WHERE note_id=? AND user_id = ?", noteId, userId)
 
 	for _, category := range note.Categories {
 		var count int64
 		db.Model(&Note{}).Joins("JOIN note_categories ON notes.id = note_categories.note_id").
-			Where("note_categories.category_id = ?", category.ID).Count(&count)
+			Where("note_categories.category_id = ?", category.ID).
+			Where("user_id = ?", userId).
+			Count(&count)
 		if count == 0 {
 			db.Delete(&Category{}, category.ID)
 		}
@@ -136,9 +144,9 @@ func DeleteNote(noteId int) error {
 	return nil
 }
 
-func UpdateNote(noteId int, title string, content string, categoryNames []string) error {
+func UpdateNote(noteId int, title string, content string, categoryNames []string, userId uint) error {
 	var note Note
-	if err := db.Preload("Categories").First(&note, noteId).Error; err != nil {
+	if err := db.Preload("Categories").Where("user_id = ?", userId).First(&note, noteId).Error; err != nil {
 		return err
 	}
 
@@ -172,11 +180,12 @@ func UpdateNote(noteId int, title string, content string, categoryNames []string
 	return db.Save(&note).Error
 }
 
-func GetNotesByCategory(categoryNames []string) ([]Note, error) {
+func GetNotesByCategory(categoryNames []string, userId uint) ([]Note, error) {
 	var notes []Note
 	err := db.Joins("JOIN note_categories ON note_categories.note_id = notes.id").
 		Joins("JOIN categories ON categories.id = note_categories.category_id").
 		Where("categories.name IN ?", categoryNames).
+		Where("notes.user_id = ?", userId).
 		Order("notes.updated_at DESC").
 		Preload("Categories").
 		Preload("Attachments").
@@ -184,8 +193,8 @@ func GetNotesByCategory(categoryNames []string) ([]Note, error) {
 	return notes, err
 }
 
-func InsertSession(token string) error {
-	session := ActiveSession{Token: token}
+func InsertSession(userId uint, token string) error {
+	session := ActiveSession{Token: token, UserID: userId}
 	result := db.Create(&session)
 	return result.Error
 }
@@ -212,4 +221,13 @@ func CleanSessions() error {
 
 	result = db.Where("created_at IS NULL").Delete(&ActiveSession{})
 	return result.Error
+}
+
+func GetUser(username string) (User, error) {
+	user := User{}
+	result := db.Where("username = ?", username).First(&user)
+	if result.Error != nil {
+		return user, result.Error
+	}
+	return user, nil
 }

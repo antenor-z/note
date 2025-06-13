@@ -10,8 +10,12 @@ files ending with "-dev".
 You can also run without Docker. On the note-back run:
 ```
 go mod download
-go build
-./note
+make run
+```
+
+To admin the users use:
+```
+make admin
 ```
 
 On the note-front, you can use a simple Python server

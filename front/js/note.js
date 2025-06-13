@@ -18,6 +18,7 @@ function try_login() {
             }
         })
 }
+try_login()
 setInterval(try_login, 5000)
 fetchNotes()
 function fetchCategories() {

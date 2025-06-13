@@ -5,30 +5,31 @@ import (
 	"encoding/base64"
 	"errors"
 	"note/db"
-	"note/noteConfig"
 	"sync"
 	"time"
 
 	"github.com/pquerna/otp/totp"
+	"golang.org/x/crypto/bcrypt"
 )
 
-var authSecret noteConfig.Auth = noteConfig.GetAuthSecret()
-
 type safeSession struct {
-	active map[string]bool
+	active map[string]uint
 	mutex  sync.RWMutex
 }
 
-func (s *safeSession) add(token string) {
+func (s *safeSession) add(token string, userID uint) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
-	s.active[token] = true
+	s.active[token] = userID
 }
 
-func (s *safeSession) exists(token string) bool {
+func (s *safeSession) getUserId(token string) (uint, error) {
 	s.mutex.RLock()
 	defer s.mutex.RUnlock()
-	return s.active[token]
+	if s.active[token] != 0 {
+		return s.active[token], nil
+	}
+	return 0, errors.New("no user found")
 }
 
 func (s *safeSession) remove(token string) {
@@ -37,7 +38,7 @@ func (s *safeSession) remove(token string) {
 	delete(s.active, token)
 }
 
-var sessionsCache safeSession = safeSession{active: make(map[string]bool)}
+var sessionsCache safeSession = safeSession{active: make(map[string]uint)}
 
 func cachePurge() {
 	timer := time.NewTicker(time.Hour * 1)
@@ -70,12 +71,17 @@ func tokenGenerator() string {
 }
 
 func Login(outside AuthExternal) (string, error) {
-	if outside.Username == noteConfig.GetAuthSecret().Username &&
-		outside.Password == noteConfig.GetAuthSecret().Password &&
-		totp.Validate(outside.Passcode, noteConfig.GetAuthSecret().Totp) {
+	user, err := db.GetUser(outside.Username)
+	if err != nil {
+		return "", errors.New("invalid auth")
+	}
+	pwHashMismatch := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(outside.Password))
+	if outside.Username == user.Username &&
+		pwHashMismatch == nil &&
+		totp.Validate(outside.Passcode, user.Totp) {
 		token := tokenGenerator()
-		sessionsCache.add(token)
-		db.InsertSession(token)
+		sessionsCache.add(token, user.ID)
+		db.InsertSession(user.ID, token)
 		db.CleanSessions()
 		return token, nil
 	}
@@ -83,21 +89,23 @@ func Login(outside AuthExternal) (string, error) {
 }
 
 func Logout(token string) (string, error) {
-	if sessionsCache.exists(token) {
-		sessionsCache.remove(token)
-		db.DeleteSession(token)
-		return "logged out", nil
+	_, err := sessionsCache.getUserId(token)
+	if err != nil {
+		return "", errors.New("invalid auth")
 	}
-	return "", errors.New("invalid auth")
+	sessionsCache.remove(token)
+	db.DeleteSession(token)
+	return "logged out", nil
 }
 
-func Validate(token string) bool {
-	if sessionsCache.exists(token) {
-		return true
+func GetLoggedUserId(token string) (uint, error) {
+	userId, err := sessionsCache.getUserId(token)
+	if err == nil {
+		return userId, nil
 	}
 	if db.IsSessionValid(token) {
-		sessionsCache.add(token)
-		return true
+		sessionsCache.add(token, userId)
+		return userId, nil
 	}
-	return false
+	return 0, errors.New("invalid auth")
 }
