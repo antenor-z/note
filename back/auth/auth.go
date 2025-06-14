@@ -103,9 +103,10 @@ func GetLoggedUserId(token string) (uint, error) {
 	if err == nil {
 		return userId, nil
 	}
-	if db.IsSessionValid(token) {
-		sessionsCache.add(token, userId)
-		return userId, nil
+	userIdFromDb, err := db.GetUserId(token)
+	if err != nil {
+		return 0, errors.New("invalid auth")
 	}
-	return 0, errors.New("invalid auth")
+	sessionsCache.add(token, userIdFromDb)
+	return userIdFromDb, nil
 }

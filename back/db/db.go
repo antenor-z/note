@@ -199,13 +199,13 @@ func InsertSession(userId uint, token string) error {
 	return result.Error
 }
 
-func IsSessionValid(token string) bool {
+func GetUserId(token string) (uint, error) {
 	var activeSession ActiveSession
 	result := db.Where("token = ?", token).First(&activeSession)
 	if result.Error != nil {
-		return false
+		return 0, result.Error
 	}
-	return activeSession.Token == token
+	return activeSession.UserID, nil
 }
 
 func DeleteSession(token string) error {
