@@ -1,15 +1,3 @@
-document.getElementById('addNote').style.display = "none"
-function toggleAddNote() {
-    const addNote = document.getElementById('addNote')
-    if (addNote.style.display === "none") {
-        addNote.style.display = "grid"
-        document.getElementById("noteTitle").focus()
-    }
-    else {
-        addNote.style.display = "none"
-    }
-}
-
 function try_login() {
     fetch(`${window.API_URL}/isLogged`, {credentials: "include" })
         .then(response => {
@@ -131,8 +119,10 @@ function fetchNotes() {
                         <div class="content" id="noteContent${element.id}">
                             ${content}
                         </div>
-                        <button onclick="editNoteToggle(${element.id})" id="editButtonNote${element.id}">Edit</button>
-                        <button onclick="copyNote(${element.id})" id="copyButtonNote${element.id}">Copy</button>
+                        <div class="edit-action-container">
+                            <button onclick="editNoteToggle(${element.id})" id="editButtonNote${element.id}">Edit</button>
+                            <button onclick="copyNote(${element.id})" id="copyButtonNote${element.id}">Copy</button>
+                        </div>
                     </div>
                     <div class="attachments">
                         ${element.attachments.length ? `

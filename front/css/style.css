@@ -160,13 +160,6 @@ textarea {
     }
 }
 
-.note {
-    button {
-        margin-right: 10px;
-        padding: 10px 20px;
-    }
-}
-
 .control-bar {
     display: flex;
     justify-content: start;
@@ -183,6 +176,10 @@ textarea {
 .edit-action-container {
     display: flex;
     margin: 20px 5px;
+    button {
+        margin-right: 10px;
+        padding: 10px 20px;
+    }
 }
 
 #version {
@@ -195,19 +192,25 @@ textarea {
 }
 
 @keyframes example {
-    0%   {opacity: 0; transform: translateY(-50%);}
+    0%   {opacity: 0; transform: rotate3d(1, 0, 0, 90deg);}
     100% {opacity: 1;}
 }
 
 ::backdrop {
-    background-color: #00000096;
-    backdrop-filter: blur(10px);
+    background-color: #0f0f15c4;
+    backdrop-filter: blur(4px);
 }
 
 dialog {
-    background-color: #33333b;
+    border: 0;
+    background-color: #00000000;
     color:#bcbcbc;
     animation-name: example;
-    animation-duration: 0.3s;
+    animation-duration: 0.5s;
     animation-timing-function: ease-out;
+}
+
+#addNote {
+    max-width: 800px;
+    width: 80%;
 }
