@@ -44,11 +44,22 @@
       Loading...
     </div>
     <span id="version"></span>
+    <dialog id="deleteModal">
+      <form>
+        <p></p>
+        <input id="answer" type="text">
+        <div>
+          <button value="cancel" formmethod="dialog">Cancel</button>
+          <button id="confirmBtn" value="default">Confirm</button>
+        </div>
+      </form>
+    </dialog>
   </content>
   <script src="js/3p/marked.min.js"></script>
   <script src="js/3p/purify.min.js"></script>
   <script src="js/config.js"></script>
   <script src="js/note.js"></script>
+  <script src="js/modal.js"></script>
   <script src="js/logout.js"></script>
   <script src="js/version.js"></script>
   <script>

@@ -21,7 +21,7 @@ a, a:visited {
 
 content {
     padding: 10px 0;
-    max-width: 900px;
+    max-width: 1000px;
     margin: 0 auto;
     display: block;
 }
@@ -192,4 +192,22 @@ textarea {
 #authfail {
     font-family: monospace;
     display: none;
+}
+
+@keyframes example {
+    0%   {opacity: 0; transform: translateY(-50%);}
+    100% {opacity: 1;}
+}
+
+::backdrop {
+    background-color: #00000096;
+    backdrop-filter: blur(10px);
+}
+
+dialog {
+    background-color: #33333b;
+    color:#bcbcbc;
+    animation-name: example;
+    animation-duration: 0.3s;
+    animation-timing-function: ease-out;
 }

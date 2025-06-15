@@ -258,10 +258,10 @@ function sendNote() {
             console.error('Error fetching:', error)
         });
 }
-function deleteNote(noteId) {
-    const person = prompt("Delete this note? Write 'delete' if you are sure.");
-    if (person !== "delete") {
-        return
+async function deleteNote(noteId) {
+    const answer = await confirmation("Delete this note? Write 'delete' if you are sure.")
+    if (answer !== "delete") {
+        return;
     }
     fetch(`${window.API_URL}/note/${noteId}`, { method: "DELETE", credentials: "include" })
         .then(response => response.json())
@@ -273,8 +273,11 @@ function deleteNote(noteId) {
         })
     window.scrollTo({top: 0, behavior: 'smooth'});
 }
-function deleteAttachment(noteId, attachmentId) {
-    if (!confirm('Are you sure you want to delete this attachment?')) return
+async function deleteAttachment(noteId, attachmentId) {
+    const answer = await confirmation("Delete this attachment? Write 'delete' if you are sure.")
+    if (answer !== "delete") {
+        return;
+    }
     
     fetch(`${window.API_URL}/note/${noteId}/attachment/${attachmentId}`, {
         method: 'DELETE',
