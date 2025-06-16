@@ -191,9 +191,14 @@ textarea {
     display: none;
 }
 
-@keyframes example {
+@keyframes open {
     0%   {opacity: 0; transform: rotate3d(1, 0, 0, 90deg);}
     100% {opacity: 1;}
+}
+
+@keyframes close {
+    0% {opacity: 1;}
+    100%   {opacity: 0; transform: rotate3d(1, 0, 0, 90deg);}
 }
 
 ::backdrop {
@@ -205,9 +210,11 @@ dialog {
     border: 0;
     background-color: #00000000;
     color:#bcbcbc;
-    animation-name: example;
-    animation-duration: 0.5s;
-    animation-timing-function: ease-out;
+    animation: open 0.5s ease-out;
+}
+
+dialog.closing {
+    animation: close 0.5s ease-out backwards;
 }
 
 #addNote {

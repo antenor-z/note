@@ -1,6 +1,6 @@
 function confirmation(question) {
     return new Promise((resolve) => {
-        document.body.style.overflow = 'hidden';
+        document.body.style.overflow = 'hidden'
         const dialog = document.getElementById("deleteModal")
         const input = document.getElementById("answer")
         const confirmBtn = document.getElementById("confirmBtn")
@@ -15,20 +15,36 @@ function confirmation(question) {
         function onConfirm(e) {
             e.preventDefault()
             cleanup()
-            dialog.close()
             resolve(input.value);
         }
-        function onClose() {
+        function onClose(e) {
+            e.preventDefault()
             cleanup();
             resolve(null);
         }
         function cleanup() {
-            confirmBtn.removeEventListener("click", onConfirm)
-            dialog.removeEventListener("close", onClose)
-            document.body.style.overflow = 'auto';
+            dialog.classList.add('closing');
+            dialog.addEventListener('animationend', () => {
+                dialog.close();
+                dialog.classList.remove('closing');
+                confirmBtn.removeEventListener("click", onConfirm)
+                closeBtn.removeEventListener("click", onClose)
+                document.body.style.overflow = 'auto';
+            }, { once: true });
         }
 
         confirmBtn.addEventListener("click", onConfirm)
-        dialog.addEventListener("close", onClose)
+        closeBtn.addEventListener("click", onClose)
     })
+}
+function closeSendNote() {
+    const dialog = document.getElementById("addNote")
+    dialog.classList.add('closing');
+    dialog.addEventListener('animationend', () => {
+        dialog.close();
+        dialog.classList.remove('closing');
+        confirmBtn.removeEventListener("click", onConfirm)
+        closeBtn.removeEventListener("click", onClose)
+        document.body.style.overflow = 'auto';
+    }, { once: true });
 }

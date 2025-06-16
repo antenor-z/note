@@ -33,7 +33,7 @@
         <input id="noteCategories" type="textbox">
         <div class="edit-action-container">
           <button onclick="sendNote()">Add</button>
-          <button onclick="addNote.close()">Cancel</button>
+          <button onclick="closeSendNote()">Cancel</button>
         </div>
       </div>
     </dialog>
@@ -48,14 +48,12 @@
     <span id="version"></span>
     <dialog id="deleteModal">
       <div class="box grid">
-        <form>
           <p></p>
           <input id="answer" type="text">
           <div>
-            <button value="cancel" formmethod="dialog">Cancel</button>
-            <button id="confirmBtn" value="default">Confirm</button>
+              <button id="closeBtn">Close</button>
+              <button id="confirmBtn" value="default">Confirm</button>
           </div>
-        </form>
       </div>
     </dialog>
   </content>

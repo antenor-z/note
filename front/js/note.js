@@ -226,27 +226,8 @@ function sendNote() {
         .catch(error => {
             console.error('Error fetching:', error)
         })
+    closeSendNote()
     window.scrollTo({top: 0, behavior: 'smooth'});
-}
-function sendNote() {
-    const noteTitle = document.getElementById("noteTitle").value
-    const noteContent = document.getElementById("noteContent").value
-    const categories = document.getElementById("noteCategories").value.split(",")
-    document.getElementById("noteTitle").value = ""
-    document.getElementById("noteContent").value = ""
-    document.getElementById("noteCategories").value = ""
-    fetch(`${window.API_URL}/note`, {
-        method: "POST",
-        body: JSON.stringify({ title: noteTitle, content: noteContent, categories: categories }),
-        credentials: "include"
-    })
-        .then(response => response.json())
-        .then(data => {
-            window.location = "index.html"
-        })
-        .catch(error => {
-            console.error('Error fetching:', error)
-        });
 }
 async function deleteNote(noteId) {
     const answer = await confirmation("Delete this note? Write 'delete' if you are sure.")
