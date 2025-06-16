@@ -37,14 +37,3 @@ function confirmation(question) {
         closeBtn.addEventListener("click", onClose)
     })
 }
-function closeSendNote() {
-    const dialog = document.getElementById("addNote")
-    dialog.classList.add('closing');
-    dialog.addEventListener('animationend', () => {
-        dialog.close();
-        dialog.classList.remove('closing');
-        confirmBtn.removeEventListener("click", onConfirm)
-        closeBtn.removeEventListener("click", onClose)
-        document.body.style.overflow = 'auto';
-    }, { once: true });
-}

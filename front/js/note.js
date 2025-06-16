@@ -148,7 +148,6 @@ function editNoteToggle(noteId) {
     const noteCopyButton = document.getElementById("copyButtonNote" + noteId)
     const innerNote = document.getElementById("innerNote" + noteId)
     const elements = document.querySelectorAll('.delete-attachment')
-    console.log(elements)
 
     if (noteDiv.style.display === "grid") {
         noteDiv.style.display = "none"
@@ -228,6 +227,17 @@ function sendNote() {
         })
     closeSendNote()
     window.scrollTo({top: 0, behavior: 'smooth'});
+}
+function closeSendNote() {
+    const dialog = document.getElementById("addNote")
+    dialog.classList.add('closing');
+    dialog.addEventListener('animationend', () => {
+        dialog.close();
+        dialog.classList.remove('closing');
+        confirmBtn.removeEventListener("click", onConfirm)
+        closeBtn.removeEventListener("click", onClose)
+        document.body.style.overflow = 'auto';
+    }, { once: true });
 }
 async function deleteNote(noteId) {
     const answer = await confirmation("Delete this note? Write 'delete' if you are sure.")
