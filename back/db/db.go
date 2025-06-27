@@ -91,7 +91,7 @@ func DeleteAttachment(noteId uint, attachmentId int, userId uint) error {
 
 func GetAttachment(noteId uint, attachmentId int, userId uint) (Attachment, error) {
 	var attachment Attachment
-	err := db.Where("id = ? AND note_id = ? AND user_id", attachmentId, noteId, userId).
+	err := db.Where("id = ? AND note_id = ? AND user_id = ?", attachmentId, noteId, userId).
 		First(&attachment).Error
 	return attachment, err
 }
@@ -174,7 +174,7 @@ func UpdateNote(noteId int, title string, content string, categoryNames []string
 	var categories []*Category
 	for _, name := range categoryNames {
 		var category Category
-		db.FirstOrCreate(&category, Category{Name: name})
+		db.FirstOrCreate(&category, Category{Name: name, UserID: userId})
 		categories = append(categories, &category)
 	}
 
@@ -186,7 +186,7 @@ func UpdateNote(noteId int, title string, content string, categoryNames []string
 	for _, prevCat := range prevCategories {
 		var count int64
 		db.Model(&Note{}).Joins("JOIN note_categories ON notes.id = note_categories.note_id").
-			Where("note_categories.category_id = ?", prevCat.ID).Count(&count)
+			Where("note_categories.category_id = ? AND user_id = ?", prevCat.ID, userId).Count(&count)
 
 		if count == 0 {
 			db.Delete(&Category{}, prevCat.ID)

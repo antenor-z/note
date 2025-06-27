@@ -71,6 +71,7 @@ func tokenGenerator() string {
 }
 
 func Login(outside AuthExternal) (string, error) {
+	db.CleanSessions()
 	user, err := db.GetUser(outside.Username)
 	if err != nil {
 		return "", errors.New("invalid auth")
@@ -82,7 +83,6 @@ func Login(outside AuthExternal) (string, error) {
 		token := tokenGenerator()
 		sessionsCache.add(token, user.ID)
 		db.InsertSession(user.ID, token)
-		db.CleanSessions()
 		return token, nil
 	}
 	return "", errors.New("invalid auth")
