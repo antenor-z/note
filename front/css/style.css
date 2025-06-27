@@ -100,7 +100,7 @@ button:hover {
     }
 }
 
-input {
+select,input {
     background-color: #00000050;
     color: #ddd;
     padding: 10px 15px;
@@ -111,7 +111,7 @@ input {
     border-radius: 10px;
 }
 
-input:focus,textarea:focus {
+select:focus,input:focus,textarea:focus {
     border: solid #edb80cae 3px;
 }
 

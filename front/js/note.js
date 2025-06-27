@@ -9,6 +9,8 @@ function try_login() {
 try_login()
 setInterval(try_login, 5000)
 fetchNotes()
+showHidden.addEventListener("click", () => fetchNotes())
+priority.addEventListener("click", () => fetchNotes())
 function fetchCategories() {
     const container = document.getElementById('categories-container')
     const categoryMap = {}
@@ -62,10 +64,11 @@ function fetchNotes() {
         if (!checkBox) continue;
         if (checkBox.checked) catList.push(checkBox.name);
     }
-
+    const showHidden = document.getElementById("showHidden").value == "yes"
+    const priority = parseInt(document.getElementById("priority").value)
     fetch(`${window.API_URL}/note/category`, {
         method: "POST",
-        body: JSON.stringify({ categories: catList }),
+        body: JSON.stringify({ categories: catList, showHidden: showHidden, priority: priority }),
         credentials: "include"
     })
     .then(response => response.json())
@@ -91,6 +94,12 @@ function fetchNotes() {
 
             const created = parseDate(element.createdAt);
             const updated = parseDate(element.updatedAt);
+            let deadline = "No deadline"
+            if (element.deadline != null) {
+                const _deadline = parseDate(element.deadline);
+                deadline = `${_deadline.day}/${_deadline.month}/${_deadline.year} ${_deadline.time}`
+            }
+
             const title = escapeHtml(element.title);
             const categories = element.categories.map(cat => escapeHtml(cat.name)).join(', ');
             const editCategories = element.categories.map(cat => escapeHtml(cat.name)).join(',');
@@ -113,9 +122,13 @@ function fetchNotes() {
                     </div>
                     <div id="innerNote${element.id}">
                         <h2>${title}</h2>
-                        <h3>[${categories}]</h3>
+                        <h3>[ ${categories} ]</h3>
+                        <h3><span style="background-color: gray">LOW PRIORITY</span></h3>
                         <h4>Created ${created.day}/${created.month}/${created.year} ${created.time} | 
-                            Updated ${updated.day}/${updated.month}/${updated.year} ${updated.time}</h4>
+                            Updated ${updated.day}/${updated.month}/${updated.year} ${updated.time} |
+                            Deadline: ${deadline}</h4>
+                        Priority: ${element.priority}
+                        Is hidden note: ${element.isHidden}
                         <div class="content" id="noteContent${element.id}">
                             ${content}
                         </div>
@@ -210,12 +223,17 @@ function sendNote() {
     const noteTitle = document.getElementById("noteTitle").value
     const noteContent = document.getElementById("noteContent").value
     const categories = document.getElementById("noteCategories").value.split(",")
+    const isHidden = document.getElementById("noteIsHidden").value == "yes"
+    let priority = parseInt(document.getElementById("notePriority").value)
+    let deadline = document.getElementById("noteDeadline").value
+    if (priority == 0 ) priority = null
+    if (deadline == "") deadline = null
     document.getElementById("noteTitle").value = ""
     document.getElementById("noteContent").value = ""
     document.getElementById("noteCategories").value = ""
     fetch(`${window.API_URL}/note`, {
         method: "POST",
-        body: JSON.stringify({ title: noteTitle, content: noteContent, categories: categories }),
+        body: JSON.stringify({ title: noteTitle, content: noteContent, categories: categories, isHidden: isHidden, priority: priority, deadline: deadline }),
         credentials: "include"
     })
         .then(response => response.json())

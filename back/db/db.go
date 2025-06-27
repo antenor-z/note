@@ -44,7 +44,14 @@ func DeleteUser(username string) error {
 	return result.Error
 }
 
-func InsertNote(title string, content string, categoryNames []string, userId uint) error {
+func InsertNote(
+	title string,
+	content string,
+	categoryNames []string,
+	isHidden bool,
+	deadline *time.Time,
+	priority uint,
+	userId uint) error {
 	var categories []*Category
 
 	if len(categoryNames) == 1 && categoryNames[0] == "" {
@@ -57,7 +64,15 @@ func InsertNote(title string, content string, categoryNames []string, userId uin
 		categories = append(categories, &c)
 	}
 
-	note := Note{Title: title, Content: content, Categories: categories, UserID: userId}
+	note := Note{
+		Title:      title,
+		Content:    content,
+		Categories: categories,
+		UserID:     userId,
+		IsHidden:   isHidden,
+		Deadline:   deadline,
+		Priority:   priority,
+	}
 	result := db.Create(&note)
 	return result.Error
 }
@@ -180,16 +195,26 @@ func UpdateNote(noteId int, title string, content string, categoryNames []string
 	return db.Save(&note).Error
 }
 
-func GetNotesByCategory(categoryNames []string, userId uint) ([]Note, error) {
+func GetNotesByCategory(categoryNames []string, priority *uint, showHidden bool, userId uint) ([]Note, error) {
 	var notes []Note
-	err := db.Joins("JOIN note_categories ON note_categories.note_id = notes.id").
+	query := db.Joins("JOIN note_categories ON note_categories.note_id = notes.id").
 		Joins("JOIN categories ON categories.id = note_categories.category_id").
 		Where("categories.name IN ?", categoryNames).
-		Where("notes.user_id = ?", userId).
-		Order("notes.updated_at DESC").
+		Where("notes.user_id = ?", userId)
+
+	if priority != nil {
+		query = query.Where("priority >= ?", *priority)
+	}
+
+	if !showHidden {
+		query = query.Where("is_hidden = ?", false)
+	}
+
+	err := query.Order("notes.updated_at DESC").
 		Preload("Categories").
 		Preload("Attachments").
 		Find(&notes).Error
+
 	return notes, err
 }
 

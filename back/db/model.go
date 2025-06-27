@@ -23,6 +23,9 @@ type Note struct {
 	UpdatedAt   time.Time    `json:"updatedAt"`
 	Title       string       `json:"title"`
 	Content     string       `json:"content"`
+	IsHidden    bool         `gorm:"default:false;not null" json:"isHidden"`
+	Deadline    *time.Time   `gorm:"default:null" json:"deadline"`
+	Priority    uint         `gorm:"default:0;not null" json:"priority"`
 	Categories  []*Category  `gorm:"many2many:note_categories;" json:"categories"`
 	Attachments []Attachment `json:"attachments"`
 	UserID      uint

@@ -2,21 +2,13 @@ package routes
 
 import (
 	"note/db"
+	"note/dto"
 	"os"
 	"path"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
-
-type Note struct {
-	Title      string   `json:"title" binding:"required"`
-	Content    string   `json:"content"`
-	Categories []string `json:"categories" binding:"required"`
-}
-type NoteCategory struct {
-	Categories []string `json:"categories" binding:"required"`
-}
 
 func GetAllCategories(c *gin.Context) {
 	userId := c.GetUint("userId")
@@ -26,14 +18,14 @@ func GetAllCategories(c *gin.Context) {
 
 func PostNote(c *gin.Context) {
 	userId := c.GetUint("userId")
-	var n Note
+	var n dto.Note
 	err := c.ShouldBindJSON(&n)
 	if err != nil {
 		c.JSON(400, gin.H{"error": "Invalid request"})
 		return
 	}
 
-	db.InsertNote(n.Title, n.Content, n.Categories, userId)
+	db.InsertNote(n.Title, n.Content, n.Categories, n.IsHidden, n.Deadline, n.Priority, userId)
 
 	c.JSON(200, gin.H{"data": n})
 }
@@ -50,14 +42,14 @@ func GetAllNotes(c *gin.Context) {
 
 func GetNotesByCategory(c *gin.Context) {
 	userId := c.GetUint("userId")
-	var nc NoteCategory
+	var nc dto.NoteCategory
 	err := c.ShouldBindJSON(&nc)
 	if err != nil {
 		c.JSON(400, gin.H{"error": "Invalid request"})
 		return
 	}
 
-	notes, err := db.GetNotesByCategory(nc.Categories, userId)
+	notes, err := db.GetNotesByCategory(nc.Categories, nc.Priority, nc.ShowHidden, userId)
 	if err != nil {
 		c.JSON(400, gin.H{"error": "Invalid request"})
 		return
@@ -68,7 +60,7 @@ func GetNotesByCategory(c *gin.Context) {
 
 func PutNote(c *gin.Context) {
 	userId := c.GetUint("userId")
-	var n Note
+	var n dto.Note
 	noteId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(400, gin.H{"error": "Invalid request"})
