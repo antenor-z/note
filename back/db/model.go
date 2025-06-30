@@ -28,8 +28,8 @@ type Note struct {
 	Priority    uint         `gorm:"default:0;not null" json:"priority"`
 	Categories  []*Category  `gorm:"many2many:note_categories;" json:"categories"`
 	Attachments []Attachment `json:"attachments"`
-	UserID      uint
-	User        User
+	UserID      uint         `json:"-"`
+	User        User         `json:"-"`
 }
 type Attachment struct {
 	ID       uint   `gorm:"primaryKey" json:"id"`

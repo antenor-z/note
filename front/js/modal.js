@@ -1,39 +1,52 @@
 function confirmation(question) {
-    return new Promise((resolve) => {
-        document.body.style.overflow = 'hidden'
-        const dialog = document.getElementById("deleteModal")
-        const input = document.getElementById("answer")
-        const confirmBtn = document.getElementById("confirmBtn")
-        const message = dialog.querySelector("p")
+    return new Promise(resolve => {
+        const dialog = document.createElement('dialog');
+        dialog.classList.add('confirmation-modal');
+        dialog.innerHTML = `
+      <div class="box grid">
+        <p>${question}</p>
+        <input id="confirm-input" type="text">
+        <div>
+          <button id="btn-close">Cancel</button>
+          <button id="btn-confirm">Yes</button>
+        </div>
+      </div>
+    `;
 
-        message.textContent = question
+        document.body.append(dialog);
+        document.body.style.overflow = 'hidden';
 
-        input.value = ""
+        const input = dialog.querySelector('#confirm-input');
+        const btnClose = dialog.querySelector('#btn-close');
+        const btnConfirm = dialog.querySelector('#btn-confirm');
 
-        dialog.showModal()
+        dialog.showModal();
+        input.focus();
 
-        function onConfirm(e) {
-            e.preventDefault()
-            cleanup()
-            resolve(input.value);
-        }
-        function onClose(e) {
-            e.preventDefault()
-            cleanup();
-            resolve(null);
-        }
         function cleanup() {
             dialog.classList.add('closing');
             dialog.addEventListener('animationend', () => {
                 dialog.close();
-                dialog.classList.remove('closing');
-                confirmBtn.removeEventListener("click", onConfirm)
-                closeBtn.removeEventListener("click", onClose)
-                document.body.style.overflow = 'auto';
+                dialog.remove();
+                document.body.style.overflow = '';
             }, { once: true });
         }
 
-        confirmBtn.addEventListener("click", onConfirm)
-        closeBtn.addEventListener("click", onClose)
-    })
+        btnConfirm.addEventListener('click', e => {
+            e.preventDefault();
+            cleanup();
+            resolve(input.value);
+        });
+        btnClose.addEventListener('click', e => {
+            e.preventDefault();
+            cleanup();
+            resolve(null);
+        });
+
+        dialog.addEventListener('cancel', e => {
+            e.preventDefault();
+            cleanup();
+            resolve(null);
+        });
+    });
 }

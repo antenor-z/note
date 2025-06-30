@@ -168,8 +168,9 @@ textarea {
         width: 100%;
     }
     button {
-        min-width: 80px;
-        padding: 12px 0;
+        min-width: 70px;
+        padding: 10px 0;
+        margin-right: 10px;
     }
 }
 

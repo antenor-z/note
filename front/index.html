@@ -35,24 +35,27 @@
     </div>
     <content>
         <div class="control-bar">
-            <button onclick="addNote.showModal()" style="margin-right: 10px;">New</button>
-            <button onclick="toggleFilters()" style="margin-right: 10px;">Config</button>
+            <button onclick="addNote.showModal()">New</button>
+            <button onclick="toggleFilters()">Config</button>
             <input id="search" type="text" placeholder="search">
         </div>
         <div id="filter-container" class="grid box" style="display: none;">
             <label for="showHidden">Hidden notes</label>
             <select name="showHidden" id="showHidden">
-                <option value="no">Hide</option>
+                <option value="no" selected>Hide</option>
                 <option value="yes">Show</option>
             </select>
-            <label for="priority">Show priority above</label>
+            <label for="priority">Priority equal or above</label>
             <select name="priority" id="priority">
-                <option value="0">None</option>
+                <option value="0" selected>None</option>
                 <option value="1">Low</option>
                 <option value="2">Medium</option>
                 <option value="3">High</option>
             </select>
-            <button onclick="logout()">Exit session</button>
+            <div class="edit-action-container">
+                <button onclick="toggleFilters()">Close</button>
+                <button onclick="logout()">Exit session</button>
+            </div>
         </div>
         
         <dialog id="addNote">
@@ -94,16 +97,6 @@
             Loading...
         </div>
         <span id="version"></span>
-        <dialog id="deleteModal">
-            <div class="box grid">
-                <p></p>
-                <input id="answer" type="text">
-                <div>
-                    <button id="closeBtn">Close</button>
-                    <button id="confirmBtn" value="default">Confirm</button>
-                </div>
-            </div>
-        </dialog>
     </content>
     <script src="js/3p/marked.min.js"></script>
     <script src="js/3p/purify.min.js"></script>

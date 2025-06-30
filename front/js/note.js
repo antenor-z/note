@@ -64,17 +64,23 @@ function fetchNotes() {
         if (!checkBox) continue;
         if (checkBox.checked) catList.push(checkBox.name);
     }
-    const showHidden = document.getElementById("showHidden").value == "yes"
-    const priority = parseInt(document.getElementById("priority").value)
+
+    const showHidden = document.getElementById("showHidden").value == "yes";
+    const priorityFilter = parseInt(document.getElementById("priority").value, 10);
+
     fetch(`${window.API_URL}/note/category`, {
         method: "POST",
-        body: JSON.stringify({ categories: catList, showHidden: showHidden, priority: priority }),
+        body: JSON.stringify({
+            categories: catList,
+            showHidden: showHidden,
+            priority: priorityFilter
+        }),
         credentials: "include"
     })
     .then(response => response.json())
     .then(data => {
         const container = document.getElementById('notes-container');
-        const escapeHtml = (unsafe) => {
+        const escapeHtml = unsafe => {
             if (!unsafe) return '';
             return unsafe.toString()
                 .replace(/&/g, "&amp;")
@@ -85,7 +91,7 @@ function fetchNotes() {
         };
 
         container.innerHTML = data.data.map(element => {
-            const parseDate = (dateStr) => ({
+            const parseDate = dateStr => ({
                 year: dateStr.substring(0, 4),
                 month: dateStr.substring(5, 7),
                 day: dateStr.substring(8, 10),
@@ -94,29 +100,40 @@ function fetchNotes() {
 
             const created = parseDate(element.createdAt);
             const updated = parseDate(element.updatedAt);
-            let deadline = "No deadline"
-            if (element.deadline != null) {
-                const _deadline = parseDate(element.deadline);
-                deadline = `${_deadline.day}/${_deadline.month}/${_deadline.year} ${_deadline.time}`
-            }
+
+            const deadlineInputValue = element.deadline
+                ? element.deadline.substring(0, 16)
+                : "";
+
+            const priorityOptions = [0, 1, 2, 3].map(p => {
+                const labels = ["None", "Low", "Medium", "High"];
+                const selected = element.priority === p ? ' selected' : '';
+                return `<option value="${p}"${selected}>${labels[p]}</option>`;
+            }).join("");
+
+            const hiddenOptions = ["no", "yes"].map(val => {
+                const isYes = val === "yes";
+                const selected = element.isHidden === isYes ? ' selected' : '';
+                const label = isYes ? "Yes" : "No (default)";
+                return `<option value="${val}"${selected}>${label}</option>`;
+            }).join("");
 
             const title = escapeHtml(element.title);
             const categories = element.categories.map(cat => escapeHtml(cat.name)).join(', ');
             const editCategories = element.categories.map(cat => escapeHtml(cat.name)).join(',');
             const content = DOMPurify.sanitize(marked.parse(element.content));
 
-            let priority = ""
-            if (element.priority == 1)
-                priority = '<span style="background-color: gray; font-size: 14px">LOW PRIORITY</span>'
-            else if (element.priority == 2)
-                priority = '<span style="background-color: orange; font-size: 14px">MEDIUM PRIORITY</span>'
-            else if (element.priority == 3)
-                priority = '<span style="background-color: red; font-size: 14px">HIGH PRIORITY</span>'
+            let priorityBadge = "";
+            if (element.priority === 1) priorityBadge = '<span style="background-color: gray; font-size: 14px">LOW PRIORITY</span>';
+            if (element.priority === 2) priorityBadge = '<span style="background-color: orange; font-size: 14px">MEDIUM PRIORITY</span>';
+            if (element.priority === 3) priorityBadge = '<span style="background-color: red; font-size: 14px">HIGH PRIORITY</span>';
+            const hiddenBadge = element.isHidden
+                ? '<span style="background-color: gray; font-size: 14px">Hidden note</span>'
+                : "";
 
-            let hiddenNote = ""
-            if (element.isHidden) {
-                hiddenNote = '<span style="background-color: gray; font-size: 14px">Hidden note</span></h2>'
-            }
+            const displayDeadline = element.deadline
+                ? `${parseDate(element.deadline).day}/${parseDate(element.deadline).month}/${parseDate(element.deadline).year} ${parseDate(element.deadline).time}`
+                : "No deadline";
 
             return `
                 <div class="note box">
@@ -124,35 +141,43 @@ function fetchNotes() {
                         <input value="${title}" id="editTitle${element.id}">
                         <textarea id="editContent${element.id}">${escapeHtml(element.content)}</textarea>
                         <input value="${editCategories}" id="editCategories${element.id}">
+
                         <div class="upload-section">
                             <input type="file" id="fileInput${element.id}">
                         </div>
+
                         <label for="editDeadline${element.id}">Deadline (optional)</label>
-                        <input id="editDeadline${element.id}" type="datetime-local"></input>
+                        <input
+                            id="editDeadline${element.id}"
+                            type="datetime-local"
+                            value="${deadlineInputValue}"
+                        />
+
                         <label for="editPriority${element.id}">Priority (optional)</label>
-                        <select name="editPriority${element.id}" id="editPriority${element.id}">
-                            <option value="0">None</option>
-                            <option value="1">Low</option>
-                            <option value="2">Medium</option>
-                            <option value="3">High</option>
+                        <select id="editPriority${element.id}">
+                            ${priorityOptions}
                         </select>
+
                         <label for="editIsHidden${element.id}">Hidden note</label>
-                        <select name="editIsHidden${element.id}" id="editIsHidden${element.id}">
-                            <option value="no">No (default)</option>
-                            <option value="yes">Yes</option>
+                        <select id="editIsHidden${element.id}">
+                            ${hiddenOptions}
                         </select>
+
                         <div class="edit-action-container">
                             <button onclick="updateNote(${element.id})">Update</button>
                             <button onclick="deleteNote(${element.id})">Delete</button>
                             <button onclick="editNoteToggle(${element.id})">Close</button>
                         </div>
                     </div>
+
                     <div id="innerNote${element.id}">
-                        <h2>${title} ${priority} ${hiddenNote}</h2>
+                        <h2>${title} ${priorityBadge} ${hiddenBadge}</h2>
                         <h3>[ ${categories} ]</h3>
-                        <h4>Created ${created.day}/${created.month}/${created.year} ${created.time} | 
+                        <h4>
+                            Created ${created.day}/${created.month}/${created.year} ${created.time} |
                             Updated ${updated.day}/${updated.month}/${updated.year} ${updated.time} |
-                            Deadline: ${deadline}</h4>
+                            Deadline: ${displayDeadline}
+                        </h4>
                         <div class="content" id="noteContent${element.id}">
                             ${content}
                         </div>
@@ -161,23 +186,26 @@ function fetchNotes() {
                             <button onclick="copyNote(${element.id})" id="copyButtonNote${element.id}">Copy</button>
                         </div>
                     </div>
+
                     <div class="attachments">
                         ${element.attachments.length ? `
                             <h3>Attachments:</h3>
-                            ${element.attachments.map(attachment => `
+                            ${element.attachments.map(att => `
                                 <div class="attachment">
-                                    <a href="${window.API_URL}/note/${element.id}/attachment/${attachment.id}/file" 
-                                       target="_blank">${escapeHtml(attachment.name)}</a>
-                                    <button class="delete-attachment" 
-                                            onclick="deleteAttachment(${element.id}, ${attachment.id})">×</button>
+                                    <a href="${window.API_URL}/note/${element.id}/attachment/${att.id}/file" target="_blank">
+                                        ${escapeHtml(att.name)}
+                                    </a>
+                                    <button class="delete-attachment" onclick="deleteAttachment(${element.id}, ${att.id})">×</button>
                                 </div>
                             `).join('')}` : '<h3>(no attachments)</h3>'}
                     </div>
-                </div>`;
+                </div>
+            `;
         }).join('');
     })
     .catch(error => console.error('Error fetching:', error));
 }
+
 
 function editNoteToggle(noteId) {
     const noteDiv = document.getElementById("note" + noteId)
