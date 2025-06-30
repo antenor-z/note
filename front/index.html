@@ -34,12 +34,10 @@
         </div>
     </div>
     <content>
-        <!-- begin add note -->
         <div class="control-bar">
             <button onclick="addNote.showModal()" style="margin-right: 10px;">New</button>
-            <button onclick="logout()" style="margin-right: 10px;">Exit</button>
-            <button onclick="toggleFilters()">Filter</button>
-            <input id="search" style="margin-left: 10px;" type="text" placeholder="search">
+            <button onclick="toggleFilters()" style="margin-right: 10px;">Config</button>
+            <input id="search" type="text" placeholder="search">
         </div>
         <div id="filter-container" class="grid box" style="display: none;">
             <label for="showHidden">Hidden notes</label>
@@ -54,6 +52,7 @@
                 <option value="2">Medium</option>
                 <option value="3">High</option>
             </select>
+            <button onclick="logout()">Exit session</button>
         </div>
         
         <dialog id="addNote">
@@ -64,27 +63,29 @@
                 <textarea id="noteContent"></textarea>
                 <label for="noteCategories">Categories (comma separated)</label>
                 <input id="noteCategories" type="textbox">
-                <label for="noteDeadline">Deadline (optional)</label>
-                <input id="noteDeadline" type="datetime"></input>
-                <label for="notePriority">Priority (optional)</label>
-                <select name="notePriority" id="notePriority">
-                    <option value="0">None</option>
-                    <option value="1">Low</option>
-                    <option value="2">Medium</option>
-                    <option value="3">High</option>
-                </select>
-                <label for="noteIsHidden">Hidden note</label>
-                <select name="noteIsHidden" id="noteIsHidden">
-                    <option value="no">No (default)</option>
-                    <option value="yes">Yes</option>
-                </select>
+                <div style="display: none;" id="moreOptions">
+                    <label for="noteDeadline">Deadline (optional)</label>
+                    <input id="noteDeadline" type="datetime-local"></input>
+                    <label for="notePriority">Priority (optional)</label>
+                    <select name="notePriority" id="notePriority">
+                        <option value="0">None</option>
+                        <option value="1">Low</option>
+                        <option value="2">Medium</option>
+                        <option value="3">High</option>
+                    </select>
+                    <label for="noteIsHidden">Hidden note</label>
+                    <select name="noteIsHidden" id="noteIsHidden">
+                        <option value="no">No (default)</option>
+                        <option value="yes">Yes</option>
+                    </select>
+                </div>
                 <div class="edit-action-container">
                     <button onclick="sendNote()">Add</button>
+                    <button onclick="toggleMoreOptions()">More options</button>
                     <button onclick="closeSendNote()">Cancel</button>
                 </div>
             </div>
         </dialog>
-        <!-- end add note -->
 
         <div id="categories-container" class="grid box">
             Loading...

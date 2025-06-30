@@ -42,6 +42,7 @@ func main() {
 	internal.GET("/api/note", routes.GetAllNotes)
 	internal.GET("/api/isLogged", routes.IsLogged)
 	internal.GET("/api/category", routes.GetAllCategories)
+	internal.GET("/api/category/hidden", routes.GetAllCategoriesWithHidden)
 	internal.POST("/api/note/category", routes.GetNotesByCategory)
 	internal.DELETE("/api/note/:id", routes.DeleteNote)
 	internal.POST("/api/note/:id/attachment", routes.PostAttachment)

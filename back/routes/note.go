@@ -12,7 +12,13 @@ import (
 
 func GetAllCategories(c *gin.Context) {
 	userId := c.GetUint("userId")
-	res, _ := db.GetAllCategories(userId)
+	res, _ := db.GetAllCategories(userId, false)
+	c.JSON(200, gin.H{"data": res})
+}
+
+func GetAllCategoriesWithHidden(c *gin.Context) {
+	userId := c.GetUint("userId")
+	res, _ := db.GetAllCategories(userId, true)
 	c.JSON(200, gin.H{"data": res})
 }
 
@@ -72,7 +78,7 @@ func PutNote(c *gin.Context) {
 		return
 	}
 
-	db.UpdateNote(noteId, n.Title, n.Content, n.Categories, userId)
+	db.UpdateNote(noteId, n.Title, n.Content, n.Categories, n.IsHidden, n.Deadline, n.Priority, userId)
 	c.JSON(200, gin.H{"data": n})
 }
 

@@ -13,6 +13,7 @@ showHidden.addEventListener("click", () => fetchNotes())
 priority.addEventListener("click", () => fetchNotes())
 function fetchCategories() {
     const container = document.getElementById('categories-container')
+    const showHidden = document.getElementById("showHidden").value == "yes"
     const categoryMap = {}
     for (var child = document.getElementById("categories-container").firstChild; child !== null; child = child.nextSibling) {
         const div = child
@@ -23,8 +24,7 @@ function fetchCategories() {
             categoryMap[checkBox.name] = true
         }
     }
-    fetch(`${window.API_URL}/category`, {credentials: "include"})
-
+    fetch(showHidden ? `${window.API_URL}/category/hidden`:`${window.API_URL}/category`, {credentials: "include"})
         .then(response => response.json())
         .then(data => {
             container.innerHTML = ''
@@ -105,6 +105,19 @@ function fetchNotes() {
             const editCategories = element.categories.map(cat => escapeHtml(cat.name)).join(',');
             const content = DOMPurify.sanitize(marked.parse(element.content));
 
+            let priority = ""
+            if (element.priority == 1)
+                priority = '<span style="background-color: gray; font-size: 14px">LOW PRIORITY</span>'
+            else if (element.priority == 2)
+                priority = '<span style="background-color: orange; font-size: 14px">MEDIUM PRIORITY</span>'
+            else if (element.priority == 3)
+                priority = '<span style="background-color: red; font-size: 14px">HIGH PRIORITY</span>'
+
+            let hiddenNote = ""
+            if (element.isHidden) {
+                hiddenNote = '<span style="background-color: gray; font-size: 14px">Hidden note</span></h2>'
+            }
+
             return `
                 <div class="note box">
                     <div class="grid" id="note${element.id}" style="display:none">
@@ -114,6 +127,20 @@ function fetchNotes() {
                         <div class="upload-section">
                             <input type="file" id="fileInput${element.id}">
                         </div>
+                        <label for="editDeadline${element.id}">Deadline (optional)</label>
+                        <input id="editDeadline${element.id}" type="datetime-local"></input>
+                        <label for="editPriority${element.id}">Priority (optional)</label>
+                        <select name="editPriority${element.id}" id="editPriority${element.id}">
+                            <option value="0">None</option>
+                            <option value="1">Low</option>
+                            <option value="2">Medium</option>
+                            <option value="3">High</option>
+                        </select>
+                        <label for="editIsHidden${element.id}">Hidden note</label>
+                        <select name="editIsHidden${element.id}" id="editIsHidden${element.id}">
+                            <option value="no">No (default)</option>
+                            <option value="yes">Yes</option>
+                        </select>
                         <div class="edit-action-container">
                             <button onclick="updateNote(${element.id})">Update</button>
                             <button onclick="deleteNote(${element.id})">Delete</button>
@@ -121,14 +148,11 @@ function fetchNotes() {
                         </div>
                     </div>
                     <div id="innerNote${element.id}">
-                        <h2>${title}</h2>
+                        <h2>${title} ${priority} ${hiddenNote}</h2>
                         <h3>[ ${categories} ]</h3>
-                        <h3><span style="background-color: gray">LOW PRIORITY</span></h3>
                         <h4>Created ${created.day}/${created.month}/${created.year} ${created.time} | 
                             Updated ${updated.day}/${updated.month}/${updated.year} ${updated.time} |
                             Deadline: ${deadline}</h4>
-                        Priority: ${element.priority}
-                        Is hidden note: ${element.isHidden}
                         <div class="content" id="noteContent${element.id}">
                             ${content}
                         </div>
@@ -192,6 +216,9 @@ function updateNote(noteId) {
     const editTitle = document.getElementById("editTitle" + noteId).value;
     const editContent = document.getElementById("editContent" + noteId).value;
     const editCategories = document.getElementById("editCategories" + noteId).value.split(",");
+    const editDeadline = document.getElementById("editDeadline" + noteId).value;
+    const editPriority = document.getElementById("editPriority" + noteId).value;
+    const editIsHidden = document.getElementById("editIsHidden" + noteId).value == "yes";
 
     const input = document.getElementById(`fileInput${noteId}`)
     const noteEdit = document.getElementById(`note${noteId}`)
@@ -204,7 +231,14 @@ function updateNote(noteId) {
 
     fetch(`${window.API_URL}/note/${noteId}`, {
         method: "PUT",
-        body: JSON.stringify({ title: editTitle, content: editContent, categories: editCategories }),
+        body: JSON.stringify({ 
+            title: editTitle,
+            content: editContent, 
+            categories: editCategories,
+            deadline: editDeadline != "" ? editDeadline : null,
+            priority: parseInt(editPriority),
+            isHidden: editIsHidden
+        }),
         credentials: "include"
     })
         .then(response => response.json())

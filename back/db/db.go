@@ -120,14 +120,29 @@ func GetAllNotes(userId uint) ([]Note, error) {
 	return notes, err
 }
 
-func GetAllCategories(userId uint) ([]string, error) {
+func GetAllCategories(userId uint, showHidden bool) ([]string, error) {
 	var categories []Category
-	res := db.Where("user_id = ?", userId).Find(&categories)
-	var categoryList []string
-	for _, category := range categories {
-		categoryList = append(categoryList, category.Name)
+
+	query := db.Where("user_id = ?", userId)
+	if showHidden {
+		query = query.Preload("Notes")
+	} else {
+		query = query.Preload("Notes", "is_hidden = ?", false)
 	}
-	return categoryList, res.Error
+
+	if err := query.Find(&categories).Error; err != nil {
+		return nil, err
+	}
+
+	var categoryList []string
+	for _, c := range categories {
+		if !showHidden && len(c.Notes) == 0 {
+			continue
+		}
+		categoryList = append(categoryList, c.Name)
+	}
+
+	return categoryList, nil
 }
 
 func DeleteNote(noteId int, userId uint) error {
@@ -159,7 +174,15 @@ func DeleteNote(noteId int, userId uint) error {
 	return nil
 }
 
-func UpdateNote(noteId int, title string, content string, categoryNames []string, userId uint) error {
+func UpdateNote(
+	noteId int,
+	title string,
+	content string,
+	categoryNames []string,
+	isHidden bool,
+	deadline *time.Time,
+	priority uint,
+	userId uint) error {
 	var note Note
 	if err := db.Preload("Categories").Where("user_id = ?", userId).First(&note, noteId).Error; err != nil {
 		return err
@@ -170,6 +193,9 @@ func UpdateNote(noteId int, title string, content string, categoryNames []string
 
 	note.Title = title
 	note.Content = content
+	note.IsHidden = isHidden
+	note.Deadline = deadline
+	note.Priority = priority
 
 	var categories []*Category
 	for _, name := range categoryNames {
