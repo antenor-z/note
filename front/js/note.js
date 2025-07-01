@@ -263,7 +263,7 @@ function updateNote(noteId) {
             title: editTitle,
             content: editContent, 
             categories: editCategories,
-            deadline: editDeadline != "" ? editDeadline : null,
+            deadline: editDeadline != "" ? editDeadline+getLocalTimezoneOffset() : null,
             priority: parseInt(editPriority),
             isHidden: editIsHidden
         }),
@@ -289,7 +289,7 @@ function sendNote() {
     let priority = parseInt(document.getElementById("notePriority").value)
     let deadline = document.getElementById("noteDeadline").value
     if (priority == 0 ) priority = null
-    if (deadline == "") deadline = null
+    deadline = deadline ? deadline+getLocalTimezoneOffset() : null
     document.getElementById("noteTitle").value = ""
     document.getElementById("noteContent").value = ""
     document.getElementById("noteCategories").value = ""
@@ -361,4 +361,17 @@ function uploadFile(noteId, file) {
     .then(response => {
         if (response.ok) fetchNotes()
     })
+}
+
+function getLocalTimezoneOffset() {
+    const date = new Date();
+
+    const offsetMinutes = date.getTimezoneOffset();
+    const offsetSign = offsetMinutes <= 0 ? '+' : '-';
+    const absOffsetMinutes = Math.abs(offsetMinutes);
+    const offsetHours = String(Math.floor(absOffsetMinutes / 60)).padStart(2, '0');
+    const offsetMins = String(absOffsetMinutes % 60).padStart(2, '0');
+    const timezoneOffset = `${offsetSign}${offsetHours}:${offsetMins}`;
+
+    return `:00${timezoneOffset}`;
 }
