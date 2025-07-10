@@ -7,14 +7,6 @@ body {
     scrollbar-width: thin;
 }
 
-div.content {
-    max-height: 20em;
-    overflow-y: scroll;
-    overflow-x: scroll;
-    scrollbar-width: thin;
-    margin-bottom: 10px;
-}
-
 a, a:visited {
     color: #31bbff
 }
@@ -64,9 +56,8 @@ h3 {
 }
 
 h4 {
-    color: #5a5a5a;
+    color: #ffffff;
     font-size: 10px;
-    text-align: right;
 }
 
 button {
@@ -134,30 +125,52 @@ textarea {
 }
 
 .box {
-    background-color: #222230;;
-    padding: 20px;
     margin: 20px 0;
     border-radius: 15px;
     border: #ffffff2a 2px solid;
+    background-color: #2c2c3e;
+    .box-title {
+        border-radius: 10px 10px 0 0;
+        padding: 20px 20px 10px 20px;
+        border-bottom: #ffffff solid 1px;
+    }
+    .box-bottom {
+        border-radius: 10px 10px 0 0;
+        padding: 0 20px 20px 20px;
+    }
+    .box-content {
+        background-color: #272738;
+        max-height: 30em;
+        overflow-y: scroll;
+        overflow-x: scroll;
+        scrollbar-width: thin;
+        padding: 8px 15px;
+        min-height: 10em;
+        .attachments {
+            .attachment {
+                margin-top: 10px;
+            }
+            .delete-attachment {
+                padding: 0;
+                width: 25px;
+                height: 25px;   
+                background-color: #d14646;
+                border: 0;
+                border-radius: 30px;
+                color: #fff;
+                padding: 0 !important;
+                display: none;
+                margin-left: 15px;
+            }
+        }
+    }
+}
+.categories-container{
+    padding: 20px;
 }
 
-.attachments {
-    margin-top: 30px;
-    .attachment {
-        margin-top: 10px;
-    }
-    .delete-attachment {
-        padding: 0;
-        width: 25px;
-        height: 25px;   
-        background-color: #d14646;
-        border: 0;
-        border-radius: 30px;
-        color: #fff;
-        padding: 0 !important;
-        display: none;
-        margin-left: 15px;
-    }
+.padding20 {
+    padding: 20px;
 }
 
 .control-bar {
@@ -176,7 +189,6 @@ textarea {
 
 .edit-action-container {
     display: flex;
-    margin: 20px 5px;
     button {
         margin-right: 10px;
         padding: 10px 20px;

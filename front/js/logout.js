@@ -1,6 +1,6 @@
 async function logout() {
-    res = await confirmation("This will end your session. Exit now?")
-    if (res !== "exit") {
+    res = await confirmation("This will end your session. Exit now?", false)
+    if (res !== "yes") {
         return
     }
     fetch(`${window.API_URL}/logout`,
