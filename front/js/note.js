@@ -132,12 +132,12 @@ function fetchNotes() {
                 : "";
 
             const displayDeadline = element.deadline
-                ? `${parseDate(element.deadline).day}/${parseDate(element.deadline).month}/${parseDate(element.deadline).year} ${parseDate(element.deadline).time}`
-                : "No deadline";
+                ? `| ${parseDate(element.deadline).day}/${parseDate(element.deadline).month}/${parseDate(element.deadline).year} ${parseDate(element.deadline).time}`
+                : "";
 
             return `
                 <div class="note box">
-                    <div class="grid" id="note${element.id}" style="display:none">
+                    <div class="grid padding20" id="note${element.id}" style="display:none">
                         <input value="${title}" id="editTitle${element.id}">
                         <textarea id="editContent${element.id}">${escapeHtml(element.content)}</textarea>
                         <input value="${editCategories}" id="editCategories${element.id}">
@@ -171,33 +171,40 @@ function fetchNotes() {
                     </div>
 
                     <div id="innerNote${element.id}">
-                        <h2>${title} ${priorityBadge} ${hiddenBadge}</h2>
-                        <h3>[ ${categories} ]</h3>
-                        <h4>
-                            Created ${created.day}/${created.month}/${created.year} ${created.time} |
-                            Updated ${updated.day}/${updated.month}/${updated.year} ${updated.time} |
-                            Deadline: ${displayDeadline}
-                        </h4>
-                        <div class="content" id="noteContent${element.id}">
+                        <div class="box-title">
+                            <h2>${title} ${priorityBadge} ${hiddenBadge}</h2>
+                            <h3>[ ${categories} ]</h3>
+                        </div>
+                        <div class="box-content" id="noteContent${element.id}">
                             ${content}
                         </div>
-                        <div class="edit-action-container">
-                            <button onclick="editNoteToggle(${element.id})" id="editButtonNote${element.id}">Edit</button>
-                            <button onclick="copyNote(${element.id})" id="copyButtonNote${element.id}">Copy</button>
-                        </div>
-                    </div>
+                        <div class="box-bottom">
+                            <h4 style="opacity: 0.4">
+                            Created ${created.day}/${created.month}/${created.year} ${created.time} |
+                            Updated ${updated.day}/${updated.month}/${updated.year} ${updated.time}
+                            ${displayDeadline}
+                            </h4>
 
-                    <div class="attachments">
-                        ${element.attachments.length ? `
-                            <h3>Attachments:</h3>
-                            ${element.attachments.map(att => `
-                                <div class="attachment">
-                                    <a href="${window.API_URL}/note/${element.id}/attachment/${att.id}/file" target="_blank">
-                                        ${escapeHtml(att.name)}
-                                    </a>
-                                    <button class="delete-attachment" onclick="deleteAttachment(${element.id}, ${att.id})">×</button>
-                                </div>
-                            `).join('')}` : '<h3>(no attachments)</h3>'}
+                            <div class="attachments">
+                            ${element.attachments.length ? `
+                                <h3>Attachments:</h3>
+                                ${element.attachments.map(att => `
+                                    <div class="attachment">
+                                        <a href="${window.API_URL}/note/${element.id}/attachment/${att.id}/file" target="_blank">
+                                            ${escapeHtml(att.name)}
+                                        </a>
+                                        <button class="delete-attachment" onclick="deleteAttachment(${element.id}, ${att.id})">×</button>
+                                    </div>
+                                `).join('')}` : ''}
+                            </div>
+                            
+                            
+                            <div class="edit-action-container">
+                                <button onclick="editNoteToggle(${element.id})" id="editButtonNote${element.id}">Edit</button>
+                                <button onclick="copyNote(${element.id})" id="copyButtonNote${element.id}">Copy</button>
+                                <button onclick="deleteNote(${element.id})">Delete</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;

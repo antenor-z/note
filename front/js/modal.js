@@ -1,17 +1,21 @@
-function confirmation(question) {
+function confirmation(question, showConfirmInput=true) {
     return new Promise(resolve => {
         const dialog = document.createElement('dialog');
         dialog.classList.add('confirmation-modal');
+        let inputText = ""
+        if (showConfirmInput) {
+            inputText = '<input id="confirm-input" type="text"></input>'
+        }
         dialog.innerHTML = `
-      <div class="box grid">
-        <p>${question}</p>
-        <input id="confirm-input" type="text">
-        <div>
-          <button id="btn-close">Cancel</button>
-          <button id="btn-confirm">Yes</button>
+        <div class="box grid padding20">
+            <p>${question}</p>
+            ${inputText}
+            <div>
+            <button id="btn-close">Cancel</button>
+            <button id="btn-confirm">Yes</button>
+            </div>
         </div>
-      </div>
-    `;
+        `;
 
         document.body.append(dialog);
         document.body.style.overflow = 'hidden';
@@ -21,7 +25,8 @@ function confirmation(question) {
         const btnConfirm = dialog.querySelector('#btn-confirm');
 
         dialog.showModal();
-        input.focus();
+        if (input) 
+            input.focus();
 
         function cleanup() {
             dialog.classList.add('closing');
@@ -35,7 +40,10 @@ function confirmation(question) {
         btnConfirm.addEventListener('click', e => {
             e.preventDefault();
             cleanup();
-            resolve(input.value);
+            if (input) 
+                resolve(input.value);
+            else 
+                resolve("yes");
         });
         btnClose.addEventListener('click', e => {
             e.preventDefault();
