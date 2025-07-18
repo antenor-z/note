@@ -138,10 +138,14 @@ function fetchNotes() {
             return `
                 <div class="note box">
                     <div class="grid padding20" id="note${element.id}" style="display:none">
+                        <label for="editTitle${element.id}">Title</label>
                         <input value="${title}" id="editTitle${element.id}">
+                        <label for="editContent${element.id}">Content</label>
                         <textarea id="editContent${element.id}">${escapeHtml(element.content)}</textarea>
+                        <label for="editCategories${element.id}">Categories (comma separated)</label>
                         <input value="${editCategories}" id="editCategories${element.id}">
 
+                        <label for="fileInput${element.id}">Attach file</label>
                         <div class="upload-section">
                             <input type="file" id="fileInput${element.id}">
                         </div>
@@ -162,6 +166,19 @@ function fetchNotes() {
                         <select id="editIsHidden${element.id}">
                             ${hiddenOptions}
                         </select>
+
+                        <div class="attachments">
+                            ${element.attachments.length ? `
+                                Attachments:
+                                ${element.attachments.map(att => `
+                                    <div class="attachment">
+                                        <button class="delete-attachment" onclick="deleteAttachment(${element.id}, ${att.id})">delete</button>
+                                        <a href="${window.API_URL}/note/${element.id}/attachment/${att.id}/file" target="_blank">
+                                            ${escapeHtml(att.name)}
+                                        </a>
+                                    </div>
+                                `).join('')}` : ''}
+                        </div>
 
                         <div class="edit-action-container">
                             <button onclick="updateNote(${element.id})">Update</button>
@@ -187,13 +204,12 @@ function fetchNotes() {
 
                             <div class="attachments">
                             ${element.attachments.length ? `
-                                <h3>Attachments:</h3>
+                                Attachments:
                                 ${element.attachments.map(att => `
                                     <div class="attachment">
                                         <a href="${window.API_URL}/note/${element.id}/attachment/${att.id}/file" target="_blank">
                                             ${escapeHtml(att.name)}
                                         </a>
-                                        <button class="delete-attachment" onclick="deleteAttachment(${element.id}, ${att.id})">×</button>
                                     </div>
                                 `).join('')}` : ''}
                             </div>
