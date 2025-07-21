@@ -28,6 +28,11 @@ function fetchCategories() {
         .then(response => response.json())
         .then(data => {
             container.innerHTML = ''
+            if (data["data"].length == 0) {
+                container.style.display = 'none'
+                return
+            }
+            container.style.display = 'unset'
             data["data"].forEach(element => {
                 const catDiv = document.createElement('div')
                 const checkBox = document.createElement('input')
@@ -89,6 +94,11 @@ function fetchNotes() {
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
         };
+
+        if (data.data.length == 0) {
+            container.innerHTML = "No notes yet. Click on 'New' to create your first note.";
+            return
+        }
 
         container.innerHTML = data.data.map(element => {
             const parseDate = dateStr => ({
@@ -259,7 +269,7 @@ function editNoteToggle(noteId) {
 }
 
 function copyNote(noteId) {
-    const noteContent = document.getElementById("noteContent" + noteId).innerText
+    const noteContent = document.getElementById("editContent" + noteId).innerText
     navigator.clipboard.writeText(noteContent)
 }
 
