@@ -28,11 +28,11 @@ function fetchCategories() {
         .then(response => response.json())
         .then(data => {
             container.innerHTML = ''
-            if (data["data"].length == 0) {
+            if (data["data"] == null) {
                 container.style.display = 'none'
                 return
             }
-            container.style.display = 'unset'
+            container.style.display = 'flex'
             data["data"].forEach(element => {
                 const catDiv = document.createElement('div')
                 const checkBox = document.createElement('input')
@@ -72,6 +72,12 @@ function fetchNotes() {
 
     const showHidden = document.getElementById("showHidden").value == "yes";
     const priorityFilter = parseInt(document.getElementById("priority").value, 10);
+    const containerNotes = document.getElementById('notes-container');
+    const containerCategories = document.getElementById('categories-container')
+    if (containerCategories.style.display === '') {
+        containerNotes.innerHTML = "<div style='margin-top: 50px'>Click on 'New' to create your first note.</div>";
+        return
+    }
 
     fetch(`${window.API_URL}/note/category`, {
         method: "POST",
@@ -84,7 +90,6 @@ function fetchNotes() {
     })
     .then(response => response.json())
     .then(data => {
-        const container = document.getElementById('notes-container');
         const escapeHtml = unsafe => {
             if (!unsafe) return '';
             return unsafe.toString()
@@ -95,12 +100,7 @@ function fetchNotes() {
                 .replace(/'/g, "&#039;");
         };
 
-        if (data.data.length == 0) {
-            container.innerHTML = "No notes yet. Click on 'New' to create your first note.";
-            return
-        }
-
-        container.innerHTML = data.data.map(element => {
+        containerNotes.innerHTML = data.data.map(element => {
             const parseDate = dateStr => ({
                 year: dateStr.substring(0, 4),
                 month: dateStr.substring(5, 7),
