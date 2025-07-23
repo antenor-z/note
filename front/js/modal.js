@@ -1,18 +1,18 @@
-function confirmation(question, showConfirmInput=true) {
+function confirmation(question, showConfirmInput = true) {
     return new Promise(resolve => {
         const dialog = document.createElement('dialog');
         dialog.classList.add('confirmation-modal');
         let inputText = ""
         if (showConfirmInput) {
-            inputText = '<input id="confirm-input" type="text"></input>'
+            inputText = '<input id="confirm-input" type="text">';
         }
         dialog.innerHTML = `
         <div class="box grid padding20">
             <p>${question}</p>
             ${inputText}
             <div>
-            <button id="btn-close">Cancel</button>
-            <button id="btn-confirm">Yes</button>
+                <button id="btn-close">Cancel</button>
+                <button id="btn-confirm">Yes</button>
             </div>
         </div>
         `;
@@ -25,8 +25,7 @@ function confirmation(question, showConfirmInput=true) {
         const btnConfirm = dialog.querySelector('#btn-confirm');
 
         dialog.showModal();
-        if (input) 
-            input.focus();
+        if (input) input.focus();
 
         function cleanup() {
             dialog.classList.add('closing');
@@ -40,9 +39,9 @@ function confirmation(question, showConfirmInput=true) {
         btnConfirm.addEventListener('click', e => {
             e.preventDefault();
             cleanup();
-            if (input) 
+            if (input)
                 resolve(input.value);
-            else 
+            else
                 resolve("yes");
         });
         btnClose.addEventListener('click', e => {
@@ -55,6 +54,13 @@ function confirmation(question, showConfirmInput=true) {
             e.preventDefault();
             cleanup();
             resolve(null);
+        });
+
+        dialog.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                btnConfirm.click();
+            }
         });
     });
 }

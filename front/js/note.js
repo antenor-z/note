@@ -347,8 +347,6 @@ function closeSendNote() {
     dialog.addEventListener('animationend', () => {
         dialog.close();
         dialog.classList.remove('closing');
-        confirmBtn.removeEventListener("click", onConfirm)
-        closeBtn.removeEventListener("click", onClose)
         document.body.style.overflow = 'auto';
     }, { once: true });
 }

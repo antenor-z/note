@@ -116,6 +116,10 @@ textarea {
     border: #ffffff2a 1px solid;
     background-color: #2c2c3e;
     box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.131);
+    h1 {
+        margin: 10px 0 20px 0;
+        font-size: 40px;
+    }
     h2 {
         margin: 5px 0 5px 0;
         font-size: 36px;
