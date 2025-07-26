@@ -74,10 +74,6 @@ function fetchNotes() {
     const priorityFilter = parseInt(document.getElementById("priority").value, 10);
     const containerNotes = document.getElementById('notes-container');
     const containerCategories = document.getElementById('categories-container')
-    if (containerCategories.style.display === '') {
-        containerNotes.innerHTML = "<div style='margin-top: 50px'>Click on 'New' to create your first note.</div>";
-        return
-    }
 
     fetch(`${window.API_URL}/note/category`, {
         method: "POST",
@@ -237,6 +233,12 @@ function fetchNotes() {
         }).join('');
     })
     .catch(error => console.error('Error fetching:', error));
+    
+    setTimeout(() => {
+    if (containerCategories.style.display !== 'flex') {
+        containerNotes.innerHTML = "<div style='margin-top: 50px; text-align: center'>Click on 'New' to create your first note.</div>";
+        console.log("aaa")
+    }}, 100)
 }
 
 

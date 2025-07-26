@@ -142,16 +142,16 @@ textarea {
         border-bottom: #ffffff2a solid 1px;
         background-image: url("/img/egg-shell.png");
         .low-priority {
-            background-color: #465cd1;;
+            border: #465cd1 2px solid;
         }
         .medium-priority {
-            background-color: #ff6000; 
+            border: #ff6000 2px solid; 
         }
         .high-priority {
             background-color: #d14646;
         }
         .hidden-note {
-            background-color: gray;
+            border: gray 1px solid;
         }
         .low-priority, .medium-priority, .high-priority, .hidden-note {
             margin-left: 9px;
@@ -218,11 +218,22 @@ textarea {
     }
 }
 
-.edit-action-container {
-    display: flex;
-    button {
-        margin-right: 10px;
-        padding: 10px 20px;
+@media (min-width: 500px) {
+    .edit-action-container {
+        display: flex;
+        button {
+            margin-right: 10px;
+            padding: 10px 20px;
+        }
+    }
+}
+@media (max-width: 499px) {
+    .edit-action-container {
+        display: grid;
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+        }
     }
 }
 
