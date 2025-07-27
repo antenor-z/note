@@ -130,8 +130,8 @@ function fetchNotes() {
             const content = DOMPurify.sanitize(marked.parse(element.content));
 
             let priorityBadge = "";
-            if (element.priority === 1) priorityBadge = '<span class="low-priority">LOW PRIORITY</span>';
-            if (element.priority === 2) priorityBadge = '<span class="medium-priority">MEDIUM PRIORITY</span>';
+            if (element.priority === 1) priorityBadge = '<span class="low-priority">Low Priority</span>';
+            if (element.priority === 2) priorityBadge = '<span class="medium-priority">Medium Priority</span>';
             if (element.priority === 3) priorityBadge = '<span class="high-priority">HIGH PRIORITY</span>';
             const hiddenBadge = element.isHidden
                 ? '<span class="hidden-note"; font-size: 14px">Hidden note</span>'
