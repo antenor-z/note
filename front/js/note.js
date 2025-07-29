@@ -237,7 +237,6 @@ function fetchNotes() {
     setTimeout(() => {
     if (containerCategories.style.display !== 'flex') {
         containerNotes.innerHTML = "<div style='margin-top: 50px; text-align: center'>Click on 'New' to create your first note.</div>";
-        console.log("aaa")
     }}, 100)
 }
 
