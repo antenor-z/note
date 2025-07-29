@@ -2,6 +2,7 @@ package main
 
 import (
 	"note/db"
+	"note/fileserver"
 	"note/middleware"
 	"note/noteConfig"
 	"note/routes"
@@ -48,5 +49,10 @@ func main() {
 	internal.POST("/api/note/:id/attachment", routes.PostAttachment)
 	internal.DELETE("/api/note/:id/attachment/:attachmentId", routes.DeleteAttachment)
 	internal.GET("/api/note/:id/attachment/:attachmentId/file", routes.GetAttachmentFile)
+
+	err := fileserver.Mkdir("/aa", 1)
+	if err != nil {
+		panic(err)
+	}
 	r.Run(":5003")
 }
