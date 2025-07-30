@@ -2,18 +2,15 @@ package routes
 
 import (
 	"note/fileserver"
+	"path"
 
 	"github.com/gin-gonic/gin"
 )
 
 func Ls(c *gin.Context) {
-	path, ok := c.Params.Get("path")
-	if !ok {
-		c.JSON(400, gin.H{"error": "Invalid request"})
-		return
-	}
+	unsafePath := c.GetString("unsafePath")
 	userId := c.GetUint("userId")
-	fileList, err := fileserver.Ls(path, userId)
+	fileList, err := fileserver.Ls(unsafePath, userId)
 	if err != nil {
 		c.JSON(400, gin.H{"error": "Invalid request"})
 		return
@@ -22,14 +19,9 @@ func Ls(c *gin.Context) {
 }
 
 func Mkdir(c *gin.Context) {
-	path, ok := c.Params.Get("path")
-	if !ok {
-		c.JSON(400, gin.H{"error": "Invalid request"})
-		return
-	}
-
+	unsafePath := c.GetString("unsafePath")
 	userId := c.GetUint("userId")
-	err := fileserver.Mkdir(path, userId)
+	err := fileserver.Mkdir(unsafePath, userId)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -38,14 +30,9 @@ func Mkdir(c *gin.Context) {
 }
 
 func Rm(c *gin.Context) {
-	path, ok := c.Params.Get("path")
-	if !ok {
-		c.JSON(400, gin.H{"error": "Invalid request"})
-		return
-	}
-
+	unsafePath := c.GetString("unsafePath")
 	userId := c.GetUint("userId")
-	err := fileserver.Rm(path, userId)
+	err := fileserver.Rm(unsafePath, userId)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -54,17 +41,32 @@ func Rm(c *gin.Context) {
 }
 
 func ReadFile(c *gin.Context) {
-	path, ok := c.Params.Get("path")
-	if !ok {
-		c.JSON(400, gin.H{"error": "Invalid request"})
-		return
-	}
-
+	unsafePath := c.GetString("unsafePath")
 	userId := c.GetUint("userId")
-	filePath, fileName, err := fileserver.GetFullPathAndName(path, userId)
+	fullPath, fileName, err := fileserver.GetFullPathAndName(unsafePath, userId)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	c.FileAttachment(filePath, fileName)
+	c.FileAttachment(fullPath, fileName)
+}
+
+func WriteFile(c *gin.Context) {
+	unsafePath := c.GetString("unsafePath")
+	userId := c.GetUint("userId")
+	file, err := c.FormFile("file")
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid file"})
+		return
+	}
+
+	fullPath, _, err := fileserver.GetFullPathAndName(unsafePath, userId)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	c.SaveUploadedFile(file, path.Join(fullPath, path.Clean(file.Filename)))
+
+	c.JSON(200, gin.H{"data": "Upload OK"})
 }

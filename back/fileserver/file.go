@@ -3,32 +3,28 @@ package fileserver
 import (
 	"fmt"
 	"os"
+	"path"
+	"path/filepath"
 	"strings"
 	"time"
 )
 
-func sanitizePath(unsafePath string) string {
-	// No hidden files. Path traversal not allowed
-	unsafePath = strings.ReplaceAll(unsafePath, ".", "")
-	partsUnsafe := strings.Split(unsafePath, "/")
-	parts := []string{}
-	for _, part := range partsUnsafe {
-		part = strings.Trim(part, "/")
-		part = strings.Trim(part, " ")
-		if part != "" {
-			parts = append(parts, part)
-		}
-	}
-	return strings.Join(parts, "/")
-}
+const UPLOAD_FOLDER = "uploads/fileserver/"
 
 func createUserRootIfNotExists(userID uint) {
-	os.Mkdir("uploads/fileserver/"+fmt.Sprint(userID), os.ModePerm)
+	err := os.Mkdir(path.Join(UPLOAD_FOLDER, fmt.Sprint(userID)), os.ModePerm)
+	if err != nil {
+		panic(err)
+	}
 }
 
-func getPath(path string, userID uint) string {
+func getSafePath(unsafePath string, userID uint) string {
 	createUserRootIfNotExists(userID)
-	return sanitizePath(fmt.Sprintf("uploads/fileserver/%d/%s", userID, path))
+	cleanPath := filepath.Clean(unsafePath)
+	userRoot := filepath.Join(UPLOAD_FOLDER, fmt.Sprint(userID))
+	fullPath := filepath.Join(userRoot, cleanPath)
+
+	return fullPath
 }
 
 type File struct {
@@ -39,15 +35,18 @@ type File struct {
 	Size    int64     `json:"size"`
 }
 
-func Ls(path string, userID uint) ([]File, error) {
-	safePath := getPath(path, userID)
+func Ls(unsafePath string, userID uint) ([]File, error) {
+	safePath := getSafePath(unsafePath, userID)
 	entries, err := os.ReadDir(safePath)
 	if err != nil {
 		return nil, err
 	}
 	var files []File
 	for _, entry := range entries {
-		info, _ := entry.Info()
+		info, err := entry.Info()
+		if err != nil {
+			return nil, err
+		}
 		files = append(files, File{
 			Name:    entry.Name(),
 			Path:    fmt.Sprintf("%s/%s", safePath, entry.Name()),
@@ -60,16 +59,13 @@ func Ls(path string, userID uint) ([]File, error) {
 	return files, nil
 }
 
-func Mkdir(path string, userID uint) error {
-	return os.Mkdir(getPath(path, userID), os.ModePerm)
+func Mkdir(unsafePath string, userID uint) error {
+	return os.Mkdir(getSafePath(unsafePath, userID), os.ModePerm)
 }
 
-func WriteFile(path string, userID uint, fileContent []byte) error {
-	return os.WriteFile(getPath(path, userID), fileContent, os.ModePerm)
-}
-
-func GetFullPathAndName(path string, userID uint) (string, string, error) {
-	safePath := getPath(path, userID)
+func GetFullPathAndName(unsafePath string, userID uint) (string, string, error) {
+	// Returns safe path, file name and error
+	safePath := getSafePath(unsafePath, userID)
 	_, err := os.Stat(safePath)
 	if err != nil {
 		return "", "", err
@@ -78,6 +74,7 @@ func GetFullPathAndName(path string, userID uint) (string, string, error) {
 	return safePath, parts[len(parts)-1], nil
 }
 
-func Rm(path string, userID uint) error {
-	return os.Remove(getPath(path, userID))
+func Rm(unsafePath string, userID uint) error {
+	// Removes only empty folders or files
+	return os.Remove(getSafePath(unsafePath, userID))
 }

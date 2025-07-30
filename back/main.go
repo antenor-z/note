@@ -2,7 +2,6 @@ package main
 
 import (
 	"note/db"
-	"note/fileserver"
 	"note/middleware"
 	"note/noteConfig"
 	"note/routes"
@@ -34,25 +33,29 @@ func main() {
 
 	r.POST("/api/login", routes.Login)
 	r.GET("/api/version", routes.Version)
-	internal := r.Group("/")
+	internal := r.Group("/api")
 
 	internal.Use(middleware.AuthMiddleware())
-	internal.POST("/api/logout", routes.Logout)
-	internal.POST("/api/note", routes.PostNote)
-	internal.PUT("/api/note/:id", routes.PutNote)
-	internal.GET("/api/note", routes.GetAllNotes)
-	internal.GET("/api/isLogged", routes.IsLogged)
-	internal.GET("/api/category", routes.GetAllCategories)
-	internal.GET("/api/category/hidden", routes.GetAllCategoriesWithHidden)
-	internal.POST("/api/note/category", routes.GetNotesByCategory)
-	internal.DELETE("/api/note/:id", routes.DeleteNote)
-	internal.POST("/api/note/:id/attachment", routes.PostAttachment)
-	internal.DELETE("/api/note/:id/attachment/:attachmentId", routes.DeleteAttachment)
-	internal.GET("/api/note/:id/attachment/:attachmentId/file", routes.GetAttachmentFile)
+	internal.POST("/logout", routes.Logout)
+	internal.POST("/note", routes.PostNote)
+	internal.PUT("/note/:id", routes.PutNote)
+	internal.GET("/note", routes.GetAllNotes)
+	internal.GET("/isLogged", routes.IsLogged)
+	internal.GET("/category", routes.GetAllCategories)
+	internal.GET("/category/hidden", routes.GetAllCategoriesWithHidden)
+	internal.POST("/note/category", routes.GetNotesByCategory)
+	internal.DELETE("/note/:id", routes.DeleteNote)
+	internal.POST("/note/:id/attachment", routes.PostAttachment)
+	internal.DELETE("/note/:id/attachment/:attachmentId", routes.DeleteAttachment)
+	internal.GET("/note/:id/attachment/:attachmentId/file", routes.GetAttachmentFile)
 
-	err := fileserver.Mkdir("/aa", 1)
-	if err != nil {
-		panic(err)
-	}
+	fileserverInternal := internal.Group("/fileserver")
+	fileserverInternal.Use(middleware.GetPathMiddleware())
+	fileserverInternal.GET("/ls", routes.Ls)
+	fileserverInternal.POST("/mkdir", routes.Mkdir)
+	fileserverInternal.POST("/write", routes.WriteFile)
+	fileserverInternal.DELETE("/rm", routes.Rm)
+	fileserverInternal.GET("/read", routes.ReadFile)
+
 	r.Run(":5003")
 }
