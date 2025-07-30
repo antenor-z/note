@@ -12,10 +12,7 @@ import (
 const UPLOAD_FOLDER = "uploads/fileserver/"
 
 func createUserRootIfNotExists(userID uint) {
-	err := os.Mkdir(path.Join(UPLOAD_FOLDER, fmt.Sprint(userID)), os.ModePerm)
-	if err != nil {
-		panic(err)
-	}
+	os.Mkdir(path.Join(UPLOAD_FOLDER, fmt.Sprint(userID)), os.ModePerm)
 }
 
 func getSafePath(unsafePath string, userID uint) string {
@@ -49,7 +46,7 @@ func Ls(unsafePath string, userID uint) ([]File, error) {
 		}
 		files = append(files, File{
 			Name:    entry.Name(),
-			Path:    fmt.Sprintf("%s/%s", safePath, entry.Name()),
+			Path:    path.Join(unsafePath, entry.Name()),
 			IsDir:   entry.IsDir(),
 			ModTime: info.ModTime(),
 			Size:    info.Size(),
