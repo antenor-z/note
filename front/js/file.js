@@ -9,6 +9,7 @@ function try_login() {
 try_login()
 setInterval(try_login, 5000)
 
+console.log(confirmation("aaaa"))
 const browser = document.getElementById("browser")
 let wd = "/"
 
@@ -25,23 +26,23 @@ function ls(directory) {
             if (wd != "/") {
                 let parent = wd.split("/").slice(0, -1).join("/")
                 if (parent === "") parent = "/"
-                up = `<tr onClick="ls('${parent}')">
-                <td>..</td>
+                up = `<tr>
+                <td style="cursor: pointer;" onClick="ls('${parent}')">⬆️..</td>
                 <td></td>
                 <td></td>
                 </tr>`
             }
             browser.innerHTML = up + data.data.map(file => {
                 if (file.isDirectory) {
-                    return `<tr onClick="ls('${file.path}')">
-                    <td>${file.name}</td>
+                    return `<tr>
+                    <td style="cursor: pointer;" onClick="ls('${file.path}')">📂${file.name}</td>
                     <td>${file.modifiedOn}</td>
                     <td>${file.size}</td>
                     </tr>`
                 }
                 else {
-                    return `<tr onClick="readFile('${file.path}')">
-                    <td>${file.name}</td>
+                    return `<tr>
+                    <td style="cursor: pointer;" onClick="readFile('${file.path}')">📄${file.name}</td>
                     <td>${file.modifiedOn}</td>
                     <td>${file.size}</td>
                     </tr>`
@@ -49,4 +50,36 @@ function ls(directory) {
             })
         })
 }
+
+
+document.getElementById("uploadForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const fileInput = document.getElementById("file");
+    const file = fileInput.files[0];
+    if (!file) {
+        alert("Please select a file to upload.");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    fetch(`${window.API_URL}/fileserver/write?path=${encodeURIComponent(wd)}`, {
+        method: "POST",
+        credentials: "include",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(result => {
+        ls(wd);
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Upload failed.");
+    })
+    .finally( () => {
+        fileInput.value = ""
+    })
+});
 

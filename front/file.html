@@ -34,12 +34,16 @@
         </div>
     </div>
     <content>
-        <table id="browser">
-            
+        <form id="uploadForm" method="POST" enctype="multipart/form-data">
+            <input type="file" id="file" name="file">
+            <input type="submit">
+        </form>
+        <table id="browser" style="width: 100%;">
+
         </table>
-        
+
     </content>
- 
+
     <script src="js/config.js"></script>
     <script src="js/modal.js"></script>
     <script src="js/logout.js"></script>
