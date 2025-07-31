@@ -24,12 +24,24 @@ func getSafePath(unsafePath string, userID uint) string {
 	return fullPath
 }
 
+func formatSize(size int64) string {
+	if size > 1024*1024*1024 {
+		return fmt.Sprintf("%d GiB", size/1024/1024/1024)
+	} else if size > 1024*1024 {
+		return fmt.Sprintf("%d MiB", size/1024/1024)
+	} else if size > 1024 {
+		return fmt.Sprintf("%d KiB", size/1024)
+	} else {
+		return fmt.Sprintf("%d B", size)
+	}
+}
+
 type File struct {
 	Name    string    `json:"name"`
 	Path    string    `json:"path"`
 	IsDir   bool      `json:"isDirectory"`
 	ModTime time.Time `json:"modifiedOn"`
-	Size    int64     `json:"size"`
+	Size    string    `json:"size"`
 }
 
 func Ls(unsafePath string, userID uint) ([]File, error) {
@@ -39,21 +51,32 @@ func Ls(unsafePath string, userID uint) ([]File, error) {
 		return nil, err
 	}
 	var files []File
+	var directories []File
 	for _, entry := range entries {
 		info, err := entry.Info()
 		if err != nil {
 			return nil, err
 		}
-		files = append(files, File{
-			Name:    entry.Name(),
-			Path:    path.Join(unsafePath, entry.Name()),
-			IsDir:   entry.IsDir(),
-			ModTime: info.ModTime(),
-			Size:    info.Size(),
-		})
-
+		if entry.IsDir() {
+			directories = append(directories, File{
+				Name:    entry.Name(),
+				Path:    path.Join(unsafePath, entry.Name()),
+				IsDir:   entry.IsDir(),
+				ModTime: info.ModTime(),
+				Size:    "(DIR)",
+			})
+		} else {
+			files = append(files, File{
+				Name:    entry.Name(),
+				Path:    path.Join(unsafePath, entry.Name()),
+				IsDir:   entry.IsDir(),
+				ModTime: info.ModTime(),
+				Size:    formatSize(info.Size()),
+			})
+		}
 	}
-	return files, nil
+
+	return append(directories, files...), nil
 }
 
 func Mkdir(unsafePath string, userID uint) error {
