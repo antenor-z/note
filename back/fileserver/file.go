@@ -50,8 +50,8 @@ func Ls(unsafePath string, userID uint) ([]File, error) {
 	if err != nil {
 		return nil, err
 	}
-	var files []File
-	var directories []File
+	var files []File = make([]File, 0)
+	var directories []File = make([]File, 0)
 	for _, entry := range entries {
 		info, err := entry.Info()
 		if err != nil {

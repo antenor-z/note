@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/fileserver.css">
     <link rel="stylesheet" href="/css/scrollbar.css">
     <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
@@ -34,10 +35,28 @@
         </div>
     </div>
     <content>
-        <form id="uploadForm" method="POST" enctype="multipart/form-data">
+        <dialog id="uploadFile">
+            <div class="box grid padding20">
+            <form id="uploadForm" method="POST" enctype="multipart/form-data">
             <input type="file" id="file" name="file">
-            <input type="submit">
+            <div class="edit-action-container">
+                <button type="submit" name="Upload">Upload</button>
+                <button onclick="uploadFile.close()">Cancel</button>
+            </div>
+            </div>
         </form>
+        </dialog>
+        <div class="control-bar">
+            <button onclick="mkdir()">New dir</button>
+            <button onclick="uploadFile.showModal()">Upload</button>
+        </div>
+
+        <table>
+            <tr>
+                <td id="path">/</td>
+            </tr>
+        </table>
+        
         <table id="browser" style="width: 100%;">
 
         </table>
