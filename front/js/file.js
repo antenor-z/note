@@ -96,6 +96,7 @@ document.getElementById("uploadForm").addEventListener("submit", function (event
         })
         .finally(() => {
             fileInput.value = ""
+            uploadFile.close()
         })
 });
 
@@ -105,7 +106,10 @@ document.addEventListener("dragenter", function (event) {
 
 
 async function mkdir() {
-    const dirName = await confirmation("New folder name")
+    const dirName = await confirmation("New folder name");
+    if (dirName === null) {
+        return;
+    }
     fetch(`${window.API_URL}/fileserver/mkdir?path=${wd}/${dirName}`, {
         method: "POST",
         credentials: "include"
