@@ -47,13 +47,14 @@ function ls(directory) {
             }
             browser.innerHTML = up + data.data.map(file => {
                 let m = parseDate(file.modifiedOn)
+                let deleteDir = file.canBeDeleted ? `<td onClick="rm('${file.path}')">del</td>` : "<td></td>"
 
                 if (file.isDirectory) {
                     return `<tr style="cursor: pointer">
                     <td onClick="ls('${file.path}')">📂${file.name}</td>
                     <td onClick="ls('${file.path}')" class="fit colapse">${m.day}/${m.month}/${m.year} ${m.time}</td>
                     <td onClick="ls('${file.path}')" class="fit colapse">${file.size}</td>
-                    <td onClick="rm('${file.path}')">del</td>
+                    ${deleteDir}
                     </tr>`
                 }
                 else {

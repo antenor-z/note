@@ -37,11 +37,12 @@ func formatSize(size int64) string {
 }
 
 type File struct {
-	Name    string    `json:"name"`
-	Path    string    `json:"path"`
-	IsDir   bool      `json:"isDirectory"`
-	ModTime time.Time `json:"modifiedOn"`
-	Size    string    `json:"size"`
+	Name         string    `json:"name"`
+	Path         string    `json:"path"`
+	IsDir        bool      `json:"isDirectory"`
+	ModTime      time.Time `json:"modifiedOn"`
+	Size         string    `json:"size"`
+	CanBeDeleted bool      `json:"canBeDeleted"`
 }
 
 func Ls(unsafePath string, userID uint) ([]File, error) {
@@ -58,20 +59,32 @@ func Ls(unsafePath string, userID uint) ([]File, error) {
 			return nil, err
 		}
 		if entry.IsDir() {
+			entryPath := path.Join(safePath, entry.Name())
+			isEmpty := true
+			dirEntries, err := os.ReadDir(entryPath)
+			if err != nil {
+				return nil, err
+			}
+			if len(dirEntries) > 0 {
+				isEmpty = false
+			}
+
 			directories = append(directories, File{
-				Name:    entry.Name(),
-				Path:    path.Join(unsafePath, entry.Name()),
-				IsDir:   entry.IsDir(),
-				ModTime: info.ModTime(),
-				Size:    "(DIR)",
+				Name:         entry.Name(),
+				Path:         path.Join(unsafePath, entry.Name()),
+				IsDir:        entry.IsDir(),
+				ModTime:      info.ModTime(),
+				Size:         "(DIR)",
+				CanBeDeleted: isEmpty,
 			})
 		} else {
 			files = append(files, File{
-				Name:    entry.Name(),
-				Path:    path.Join(unsafePath, entry.Name()),
-				IsDir:   entry.IsDir(),
-				ModTime: info.ModTime(),
-				Size:    formatSize(info.Size()),
+				Name:         entry.Name(),
+				Path:         path.Join(unsafePath, entry.Name()),
+				IsDir:        entry.IsDir(),
+				ModTime:      info.ModTime(),
+				Size:         formatSize(info.Size()),
+				CanBeDeleted: true,
 			})
 		}
 	}
